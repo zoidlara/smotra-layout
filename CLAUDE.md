@@ -9,10 +9,6 @@ and text on the back wall of their stand (panels 1–4) and send a ZIP to the or
   is empty; both need real values before going live.
 - UI text is Croatian; code and comments are English.
 - Check with `npx tsc --noEmit` and `npm run build`. Dev server: `npm run dev`.
-
-## Pending setup
-
-- The repo was moved to Lara's GitHub account (larazoid) and the first commits have no author
-  email. At the start of the first session with Lara, ask her which email to use for commits and
-  set it for this repo (`git config user.email ...`) before committing anything. Remove this
-  bullet once that is done.
+- Hosted at github.com/zoidlara/smotra-layout; every push to `main` builds and publishes to
+  GitHub Pages via `.github/workflows/deploy.yml` (https://zoidlara.github.io/smotra-layout/).
+  An older copy exists at github.com/larazoid/smotra-layout and is not used.
