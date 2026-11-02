@@ -5,8 +5,8 @@ and text on the back wall of their stand (panels 1–4) and send a ZIP to the or
 
 - Booth sizes, panel order, editable walls and print thresholds: `src/booth.ts`.
 - Event details, faculty list, faculty colours and organiser email: `src/event.ts`.
-  Faculty colours are still placeholders (day colours from the schedule) and `organizerEmail`
-  is empty; both need real values before going live.
+  Faculty colours are still placeholders (day colours from the schedule) and need real values
+  before going live.
 - UI text is Croatian; code and comments are English.
 - Check with `npx tsc --noEmit` and `npm run build`. Dev server: `npm run dev`.
 - Hosted at github.com/zoidlara/smotra-layout; every push to `main` builds and publishes to

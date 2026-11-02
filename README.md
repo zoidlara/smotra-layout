@@ -31,11 +31,8 @@ Open a ZIP with **Učitaj ZIP** to see the layout in the editor.
 
 ## Before going live
 
-In `src/event.ts`:
-
-- set `organizerEmail` (currently empty, the send dialog shows "adresa još nije postavljena");
-- replace each faculty's `color` with its official colour (they are placeholders taken from the
-  day colours on the printed schedule).
+In `src/event.ts`, replace each faculty's `color` with its official colour (they are
+placeholders taken from the day colours on the printed schedule).
 
 ## Changing the stand
 

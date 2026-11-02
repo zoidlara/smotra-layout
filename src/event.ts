@@ -8,8 +8,8 @@ export const EVENT = {
   dates: '8. – 11. prosinca 2026.',
   place: 'Kampus – zgrada tri fakulteta, Ruđera Boškovića 33',
   year: 2026,
-  /** Address universities send their ZIP to. TODO: fill in before going live. */
-  organizerEmail: '',
+  /** Address universities send their ZIP to. */
+  organizerEmail: 'larabozichtt@gmail.com',
   /** Most mail servers reject attachments around 20–25 MB; above this we suggest WeTransfer. */
   maxEmailMb: 20,
 };
