@@ -99,9 +99,16 @@ export class Preview3D {
     const sH = H * s;
 
     face(sW, sD, `translateY(${sH / 2}px) rotateX(90deg)`, 'floor');
-    face(sW, sH, `translateZ(${-sD / 2}px)`, 'wall back', { img: this.app.canvas.renderRegion(back, texPx).toDataURL('image/png') });
-    face(leftLen * s, sH, `translateX(${-sW / 2}px) rotateY(90deg)`, 'wall side', { img: this.wallTexture(left, color, texPx) });
-    face(rightLen * s, sH, `translateX(${sW / 2}px) rotateY(-90deg)`, 'wall side', { img: this.wallTexture(right, color, texPx) });
+    // Artwork only faces into the stand; the outside of each wall is plain.
+    const walls: [number, string, string, string][] = [
+      [sW, `translateZ(${-sD / 2}px)`, 'back', this.app.canvas.renderRegion(back, texPx).toDataURL('image/png')],
+      [leftLen * s, `translateX(${-sW / 2}px) rotateY(90deg)`, 'side', this.wallTexture(left, color, texPx)],
+      [rightLen * s, `translateX(${sW / 2}px) rotateY(-90deg)`, 'side', this.wallTexture(right, color, texPx)],
+    ];
+    for (const [w, transform, cls, img] of walls) {
+      face(w, sH, transform, `wall ${cls}`, { img });
+      face(w, sH, `${transform} rotateY(180deg)`, `wall outer ${cls}`);
+    }
 
     // Front posts and the header boards 11 + 12 with the faculty name.
     const postH = (H + fh) * s;
