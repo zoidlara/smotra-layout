@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 import type { App } from './app';
 import { BOOTH, panelsTouched, primaryPanel, wallName } from './booth';
-import { EVENT, slotLabel } from './event';
+import { EVENT } from './event';
 import { computeIssues, effectiveDpi } from './issues';
 import { type Doc, type Item, normalizeDoc } from './state';
 import type { SavedFile } from './storage';
@@ -67,7 +67,6 @@ function summary(app: App, report: ReturnType<typeof describe>[]): string {
   const lines: string[] = [];
   lines.push(`RASPORED ŠTANDA — ${EVENT.name.toUpperCase()} ${EVENT.year}`, '');
   lines.push(`Sastavnica: ${f?.name ?? '(nije odabrana)'}`);
-  if (f) lines.push(`Termin:     ${slotLabel(f)}`);
   lines.push(`Boja:       ${color}  (svi paneli 1–8)`);
   lines.push(`Natpis:     paneli 11 i 12 — „${f?.name.toUpperCase() ?? ''}”`);
   if (ex.contact) lines.push(`Kontakt:  ${ex.contact}`);
@@ -104,10 +103,12 @@ function summary(app: App, report: ReturnType<typeof describe>[]): string {
     for (const i of issues) lines.push(`  [${i.level === 'error' ? 'GREŠKA' : i.level === 'warn' ? 'PAŽNJA' : 'INFO'}] ${i.text}`);
     lines.push('');
   }
-  const side = BOOTH.walls.filter((w) => !w.editable);
-  lines.push('BOČNI ZIDOVI', '-'.repeat(60));
-  for (const w of side) lines.push(`  ${wallName(w.kind, w.id)}: paneli ${w.panels.map((p) => p.id).join(', ')} — samo boja ${color}`);
-  lines.push('');
+  const locked = BOOTH.walls.filter((w) => !w.editable);
+  if (locked.length) {
+    lines.push('ZIDOVI BEZ UREĐIVANJA', '-'.repeat(60));
+    for (const w of locked) lines.push(`  ${wallName(w.kind, w.id)}: paneli ${w.panels.map((p) => p.id).join(', ')} — samo boja ${color}`);
+    lines.push('');
+  }
 
   if (app.store.doc.materials.length) {
     lines.push('OSTALI MATERIJALI (bez određenog mjesta, mapa materijali/)', '-'.repeat(60));
@@ -146,7 +147,7 @@ export async function buildZip(app: App): Promise<{ blob: Blob; filename: string
         version: 1,
         exported_at: new Date().toISOString(),
         event: { name: EVENT.name, dates: EVENT.dates, place: EVENT.place },
-        faculty: f ? { id: f.id, name: f.name, day: f.day, hour: f.hour, color: f.color } : null,
+        faculty: f ? { id: f.id, name: f.name, color: f.color } : null,
         contact: { name: store.doc.exhibitor.contact, email: store.doc.exhibitor.email, note: store.doc.exhibitor.note },
         units: 'mm',
         booth: {

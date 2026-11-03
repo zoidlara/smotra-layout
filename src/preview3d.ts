@@ -100,8 +100,8 @@ export class Preview3D {
 
     face(sW, sD, `translateY(${sH / 2}px) rotateX(90deg)`, 'floor');
     face(sW, sH, `translateZ(${-sD / 2}px)`, 'wall back', { img: this.app.canvas.renderRegion(back, texPx).toDataURL('image/png') });
-    face(leftLen * s, sH, `translateX(${-sW / 2}px) rotateY(90deg)`, 'wall side', { img: solidWall(left, color, texPx) });
-    face(rightLen * s, sH, `translateX(${sW / 2}px) rotateY(-90deg)`, 'wall side', { img: solidWall(right, color, texPx) });
+    face(leftLen * s, sH, `translateX(${-sW / 2}px) rotateY(90deg)`, 'wall side', { img: this.wallTexture(left, color, texPx) });
+    face(rightLen * s, sH, `translateX(${sW / 2}px) rotateY(-90deg)`, 'wall side', { img: this.wallTexture(right, color, texPx) });
 
     // Front posts and the header boards 11 + 12 with the faculty name.
     const postH = (H + fh) * s;
@@ -122,6 +122,12 @@ export class Preview3D {
     face(cw, ch, `translate3d(${ccx}px, ${ccy}px, ${sD / 2}px)`, 'org counter', { html: `<span>LOGO SMOTRE<br><small>${counter.front}</small></span>` });
     face(cd, ch, `translate3d(${ccx + cw / 2}px, ${ccy}px, ${sD / 2 - cd / 2}px) rotateY(90deg)`, 'org counter side', { html: `<small>${counter.side}</small>` });
     face(cw, cd, `translate3d(${ccx}px, ${sH / 2 - ch}px, ${sD / 2 - cd / 2}px) rotateX(90deg)`, 'org counter top');
+  }
+
+  /** The wall's artwork from the editor, or a plain faculty-coloured wall if it isn't editable. */
+  private wallTexture(spec: WallSpec, color: string, px: number): string {
+    const wall = this.app.layout.walls.find((w) => w.id === spec.id);
+    return wall ? this.app.canvas.renderRegion(wall, px).toDataURL('image/png') : solidWall(spec, color, px);
   }
 }
 

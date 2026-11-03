@@ -11,7 +11,7 @@ export interface WallSpec {
   kind: WallKind;
   title: string;
   subtitle: string;
-  /** Side walls only take the faculty colour; exhibitors design the back wall. */
+  /** Exhibitors can place images and text here. Panels left empty just take the faculty colour. */
   editable: boolean;
   /** Panels as seen when standing in front of the wall, from left to right. */
   panels: { id: string; width: number }[];
@@ -23,7 +23,7 @@ const WALLS: WallSpec[] = [
     kind: 'side',
     title: 'BOČNI ZID',
     subtitle: 'lijevo',
-    editable: false,
+    editable: true,
     panels: [
       { id: '7', width: 455 },
       { id: '8', width: 455 },
@@ -47,7 +47,7 @@ const WALLS: WallSpec[] = [
     kind: 'side',
     title: 'BOČNI ZID',
     subtitle: 'desno',
-    editable: false,
+    editable: true,
     panels: [
       { id: '5', width: 455 },
       { id: '6', width: 455 },
@@ -146,8 +146,11 @@ export function computeLayout(): Layout {
     walls.push({ id: spec.id, kind: spec.kind, title: spec.title, subtitle: spec.subtitle, x: start, y: 0, w: x - start, h: BOOTH.wallHeight, panels: own });
     x += CANVAS.wallGap;
   }
-  const right = x - CANVAS.wallGap + 80;
-  const left = -290;
+  // Keep the back wall at x = 0, so layouts saved before the side walls became editable still line up.
+  const shift = walls.find((w) => w.id === 'back')?.x ?? 0;
+  for (const r of [...walls, ...panels]) r.x -= shift;
+  const right = x - CANVAS.wallGap - shift + 80;
+  const left = (walls[0]?.x ?? 0) - 290;
   const top = CANVAS.bandY - 60;
   const bottom = BOOTH.wallHeight + 160;
   return {

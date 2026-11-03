@@ -1,10 +1,7 @@
 import type { App } from './app';
 import { BOOTH, type WallSpec, primaryPanel, wallLength, wallSpec } from './booth';
 
-/**
- * Top-down sketch of the stand. The back wall is clickable; side walls are shown
- * for orientation only (they just take the faculty colour).
- */
+/** Top-down sketch of the stand. Clicking a panel of an editable wall selects it. */
 export class FloorPlan {
   constructor(
     private readonly el: HTMLElement,
@@ -45,8 +42,9 @@ export class FloorPlan {
       });
     };
 
-    const seg = (id: string, editable: boolean, x1: number, y1: number, x2: number, y2: number, lx: number, ly: number) => {
-      const attrs = editable ? ` class="seg-g back" data-panel="${id}"` : ' class="seg-g locked"';
+    const seg = (spec: WallSpec, id: string, x1: number, y1: number, x2: number, y2: number, lx: number, ly: number) => {
+      const editable = spec.editable;
+      const attrs = editable ? ` class="seg-g ${spec.kind}" data-panel="${id}"` : ' class="seg-g locked"';
       parts.push(`
         <g${attrs}>
           ${editable ? `<line class="hit" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" />` : ''}
@@ -56,11 +54,11 @@ export class FloorPlan {
     };
 
     // Back wall runs left → right along the top.
-    for (const { p, start } of offsets(back)) seg(p.id, true, start, 0, start + p.width, 0, start + p.width / 2, -170);
+    for (const { p, start } of offsets(back)) seg(back, p.id, start, 0, start + p.width, 0, start + p.width / 2, -170);
     // Left wall: its unfolded left edge is the front of the stand.
-    for (const { p, start } of offsets(left)) seg(p.id, false, 0, D - start, 0, D - start - p.width, -190, D - start - p.width / 2);
+    for (const { p, start } of offsets(left)) seg(left, p.id, 0, D - start, 0, D - start - p.width, -190, D - start - p.width / 2);
     // Right wall: its unfolded left edge is the back corner.
-    for (const { p, start } of offsets(right)) seg(p.id, false, W, start, W, start + p.width, W + 190, start + p.width / 2);
+    for (const { p, start } of offsets(right)) seg(right, p.id, W, start, W, start + p.width, W + 190, start + p.width / 2);
 
     const corner = (x: number, y: number) => `<rect class="corner" x="${x - T / 2}" y="${y - T / 2}" width="${T}" height="${T}" />`;
 

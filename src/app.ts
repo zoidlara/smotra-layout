@@ -1,6 +1,6 @@
 import { BOOTH, type PanelLayout, computeLayout, nearestPanel, panelAt, primaryPanel } from './booth';
 import { BoothCanvas } from './canvas';
-import { DAYS, EVENT, FACULTIES, drawFascia, facultyById, slotLabel, textOn } from './event';
+import { EVENT, FACULTIES, drawFascia, facultyById, textOn } from './event';
 import { type FileEntry, isPlaceableImage, loadImageEntry, rawEntry } from './files';
 import { computeIssues } from './issues';
 import { FloorPlan } from './plan';
@@ -119,7 +119,7 @@ export class App {
     });
   }
 
-  /** Places images on the back wall. Files that can't be shown there go to "Ostali materijali". */
+  /** Places images on the walls. Files that can't be shown there go to "Ostali materijali". */
   async addFiles(list: File[], opts: { panelId?: string; at?: Vec } = {}) {
     const added: string[] = [];
     const other: File[] = [];
@@ -398,7 +398,7 @@ export class App {
     const f = this.faculty;
     const info = document.getElementById('faculty-info')!;
     info.innerHTML = f
-      ? `<div class="slot"><span class="dot" style="--c:${f.color}"></span><span><b>Vaš termin:</b> ${esc(slotLabel(f))}</span></div>`
+      ? ''
       : '<p class="hint">Odabirom sastavnice postavljaju se boja svih panela i natpis iznad štanda.</p>';
     const c = document.getElementById('fascia-preview') as HTMLCanvasElement;
     const total = BOOTH.organizer.fascia.reduce((n, x) => n + x.width, 0);
@@ -563,13 +563,11 @@ export class App {
   }
 }
 
-/** Fills a <select> with the faculties, grouped by day. */
+/** Fills a <select> with the faculties in alphabetical order. */
 function fillFacultySelect(sel: HTMLSelectElement) {
-  const groups = DAYS.map((d) => {
-    const opts = FACULTIES.filter((f) => f.day === d.id)
-      .map((f) => `<option value="${f.id}">${esc(f.name)} · ${f.hour} h</option>`)
-      .join('');
-    return `<optgroup label="${esc(d.label)}">${opts}</optgroup>`;
-  });
-  sel.innerHTML = `<option value="" disabled selected hidden>Odaberite sastavnicu…</option>${groups.join('')}`;
+  const opts = [...FACULTIES]
+    .sort((a, b) => a.name.localeCompare(b.name, 'hr'))
+    .map((f) => `<option value="${f.id}">${esc(f.name)}</option>`)
+    .join('');
+  sel.innerHTML = `<option value="" disabled selected hidden>Odaberite sastavnicu…</option>${opts}`;
 }

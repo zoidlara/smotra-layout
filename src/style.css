@@ -401,6 +401,10 @@ svg {
   stroke: var(--back);
 }
 
+.plan .side .seg {
+  stroke: var(--side);
+}
+
 .plan .locked .seg {
   stroke: #94a3b8;
   stroke-opacity: 0.45;
@@ -411,7 +415,8 @@ svg {
   stroke-width: 300;
 }
 
-.plan .seg-g.back {
+.plan .seg-g.back,
+.plan .seg-g.side {
   cursor: pointer;
 }
 
@@ -504,6 +509,10 @@ svg {
 
 .sw.back {
   background: var(--back);
+}
+
+.sw.side {
+  background: var(--side);
 }
 
 .sw.locked {
@@ -1110,24 +1119,6 @@ svg {
 
 #faculty-info:empty {
   display: none;
-}
-
-.slot {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--c);
-  border: 1px solid rgba(15, 23, 42, 0.2);
-  margin-top: 3px;
-  flex: none;
 }
 
 .fascia-wrap {

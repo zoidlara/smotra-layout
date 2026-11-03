@@ -1,12 +1,12 @@
 # Raspored štanda (Smotra Sveučilišta u Splitu)
 
-A small web app where each faculty of the University of Split lays out the back wall of its
-stand (panels 1–4) and sends the result to the organiser as one ZIP file.
+A small web app where each faculty of the University of Split lays out the walls of its
+stand (back wall 1–4, and optionally the inner side walls 5–8) and sends the result to the organiser as one ZIP file.
 
 - The faculty is chosen from a dropdown. That sets the colour of every panel (1–8) and the
   name on the header boards (11 + 12); exhibitors can't change either.
-- Only the back wall is edited in 2D. Side walls (5–8) are shown in the floor plan and the
-  3D preview, in the faculty colour.
+- All three walls are edited in 2D, unfolded side by side. Panels left empty are printed in
+  the faculty colour only.
 - Everything is measured in millimetres, so the app can warn when an image is too low-resolution
   for its printed size.
 - "Ostali materijali" takes any files the faculty wants on the stand without saying where.
@@ -32,7 +32,7 @@ Open a ZIP with **Učitaj ZIP** to see the layout in the editor.
 ## Before going live
 
 In `src/event.ts`, replace each faculty's `color` with its official colour (they are
-placeholders taken from the day colours on the printed schedule).
+placeholders).
 
 ## Changing the stand
 

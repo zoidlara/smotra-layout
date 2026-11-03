@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Raspored štanda · Smotra Sveučilišta u Splitu</title>
-    <meta name="description" content="Složite slike, logotipe i tekst na stražnji zid svog štanda za Smotru Sveučilišta u Splitu i pošaljite raspored organizatoru." />
+    <meta name="description" content="Složite slike, logotipe i tekst na zidove svog štanda za Smotru Sveučilišta u Splitu i pošaljite raspored organizatoru." />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M5 26V6h22v20' fill='none' stroke='%232563eb' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -83,11 +83,11 @@
 
         <section class="card">
           <h2>Tlocrt štanda</h2>
-          <p class="hint">Pogled odozgo. Kliknite stražnji zid da odaberete panel.</p>
+          <p class="hint">Pogled odozgo. Kliknite zid da odaberete panel.</p>
           <div id="plan" class="plan"></div>
           <ul class="legend">
             <li><i class="sw back"></i><span><b>Stražnji zid</b> — paneli 1–4, uređujete vi</span></li>
-            <li><i class="sw locked"></i><span><b>Bočni zidovi</b> — paneli 5–8, samo boja sastavnice</span></li>
+            <li><i class="sw side"></i><span><b>Bočni zidovi</b> — paneli 5–8, po želji (prazni ostaju u boji sastavnice)</span></li>
             <li><i class="sw org"></i><span><b>Organizator</b> — natpis i pult (9–12)</span></li>
           </ul>
         </section>
@@ -96,7 +96,7 @@
           <h2>Kako koristiti</h2>
           <ol>
             <li>Odaberite svoju sastavnicu. Paneli i natpis dobit će njezinu boju i naziv.</li>
-            <li>Na stražnji zid dodajte slike, logotipe ili tekst. Slike možete i povući s računala ravno na panel.</li>
+            <li>Na stražnji zid (i po želji na bočne) dodajte slike, logotipe ili tekst. Slike možete i povući s računala ravno na panel.</li>
             <li>Materijale kojima mjesto nije važno učitajte u <b>Ostali materijali</b> (desno).</li>
             <li>Pogledajte <b>3D pregled</b>, zatim kliknite <b>Pošalji organizatoru</b>.</li>
           </ol>
@@ -106,7 +106,7 @@
 
       <section class="stage-wrap">
         <div id="stage"></div>
-        <div class="stage-caption">Uređujete stražnji zid (paneli 1–4). Bočni zidovi su u boji sastavnice — pogledajte ih u 3D pregledu.</div>
+        <div class="stage-caption">Stražnji zid (paneli 1–4) u sredini, bočni zidovi (5–8) lijevo i desno. Prazni paneli ostaju u boji sastavnice.</div>
         <div class="stage-hint">Povucite pozadinu za pomicanje · Ctrl/⌘ + kotačić za zoom · Alt isključuje poravnavanje</div>
         <div class="drop-hint"><span>Ispustite slike na panel</span></div>
       </section>
@@ -165,7 +165,7 @@
             <span class="step-no">1</span>
             <div class="step-body">
               <h3>Preuzmite ZIP datoteku</h3>
-              <p>Sadrži raspored stražnjeg zida, sve slike i ostale materijale: <code id="send-filename"></code></p>
+              <p>Sadrži raspored zidova, sve slike i ostale materijale: <code id="send-filename"></code></p>
               <button class="btn primary" id="send-download">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14" /></svg>
                 Preuzmi ZIP
@@ -203,7 +203,7 @@
         <div class="welcome">
           <p class="eyebrow">8. – 11. prosinca 2026. · Kampus – zgrada tri fakulteta</p>
           <h2 id="welcome-title">Smotra Sveučilišta u Splitu</h2>
-          <p>Ovdje složite izgled stražnjeg zida svog štanda i pošaljete ga organizatoru. Za početak odaberite svoju sastavnicu.</p>
+          <p>Ovdje složite izgled zidova svog štanda i pošaljete ga organizatoru. Za početak odaberite svoju sastavnicu.</p>
           <label class="field"><span>Sastavnica</span><select id="welcome-faculty" class="faculty-select"></select></label>
           <button class="btn primary" id="welcome-start" disabled>Započni</button>
         </div>

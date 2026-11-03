@@ -1,5 +1,5 @@
 import type { App } from './app';
-import { EVENT, slotLabel } from './event';
+import { EVENT } from './event';
 import { downloadBlob, esc, formatBytes, toast } from './util';
 
 /**
@@ -55,7 +55,6 @@ export class SendDialog {
       `u privitku šaljemo raspored štanda i materijale za ${EVENT.nameAcc} ${EVENT.year}.`,
       '',
       `Sastavnica: ${f.name}`,
-      `Termin: ${slotLabel(f)}`,
       contact ? `Kontakt: ${contact}` : '',
       `Datoteka: ${filename}`,
       '',

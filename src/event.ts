@@ -14,72 +14,41 @@ export const EVENT = {
   maxEmailMb: 20,
 };
 
-export interface Day {
-  id: string;
-  label: string;
-  short: string;
-  color: string;
-}
-
-/**
- * Colours are placeholders: the day colours from the printed schedule.
- * Replace each faculty's `color` below with its official colour.
- */
-export const DAYS: Day[] = [
-  { id: '2026-12-08', label: 'Utorak, 8. prosinca', short: '8. 12.', color: '#a9d08e' },
-  { id: '2026-12-09', label: 'Srijeda, 9. prosinca', short: '9. 12.', color: '#8ea9db' },
-  { id: '2026-12-10', label: 'Četvrtak, 10. prosinca', short: '10. 12.', color: '#f4b084' },
-  { id: '2026-12-11', label: 'Petak, 11. prosinca', short: '11. 12.', color: '#f2b8c6' },
-];
-
 export interface Faculty {
   id: string;
   name: string;
-  day: string;
-  /** Start hour, e.g. "18". */
-  hour: string;
   /** Panel colour for every panel of this faculty's stand. */
   color: string;
 }
 
-const [D8, D9, D10, D11] = DAYS;
-
+/**
+ * Colours are placeholders (taken from the printed schedule).
+ * Replace each faculty's `color` with its official colour.
+ */
 export const FACULTIES: Faculty[] = [
-  { id: 'ekonomski', name: 'Ekonomski fakultet', day: D8.id, hour: '18', color: D8.color },
-  { id: 'kemijsko-tehnoloski', name: 'Kemijsko-tehnološki fakultet', day: D8.id, hour: '18', color: D8.color },
-  { id: 'katolicki-bogoslovni', name: 'Katolički bogoslovni fakultet', day: D8.id, hour: '19', color: D8.color },
-  { id: 'fgag', name: 'Fakultet građevinarstva, arhitekture i geodezije', day: D8.id, hour: '19', color: D8.color },
-
-  { id: 'kinezioloski', name: 'Kineziološki fakultet', day: D9.id, hour: '18', color: D9.color },
-  { id: 'fesb', name: 'Fakultet elektrotehnike, strojarstva i brodogradnje', day: D9.id, hour: '18', color: D9.color },
-  { id: 'pmf', name: 'Prirodoslovno-matematički fakultet', day: D9.id, hour: '18', color: D9.color },
-  { id: 'pravni', name: 'Pravni fakultet', day: D9.id, hour: '19', color: D9.color },
-  { id: 'umjetnicka-akademija', name: 'Umjetnička akademija', day: D9.id, hour: '19', color: D9.color },
-  { id: 'studiji-mora', name: 'Sveučilišni odjel za studije mora', day: D9.id, hour: '19', color: D9.color },
-
-  { id: 'zdravstvene-znanosti', name: 'Fakultet zdravstvenih znanosti', day: D10.id, hour: '18', color: D10.color },
-  { id: 'filozofski', name: 'Filozofski fakultet', day: D10.id, hour: '18', color: D10.color },
-  { id: 'forenzicke-znanosti', name: 'Fakultet za forenzičke znanosti', day: D10.id, hour: '19', color: D10.color },
-  { id: 'pomorski', name: 'Pomorski fakultet', day: D10.id, hour: '19', color: D10.color },
-
-  { id: 'agromediteranski', name: 'Agromediteranski fakultet', day: D11.id, hour: '18', color: D11.color },
-  { id: 'medicinski', name: 'Medicinski fakultet', day: D11.id, hour: '18', color: D11.color },
-  { id: 'hotelijerstvo-gastronomija', name: 'Sveučilišni studij Hotelijerstvo i gastronomija', day: D11.id, hour: '18', color: D11.color },
-  { id: 'strucni-studiji', name: 'Sveučilišni odjel za stručne studije', day: D11.id, hour: '19', color: D11.color },
-  { id: 'komunikacija-mediji', name: 'Sveučilišni studij Komunikacija i mediji', day: D11.id, hour: '19', color: D11.color },
+  { id: 'ekonomski', name: 'Ekonomski fakultet', color: '#a9d08e' },
+  { id: 'kemijsko-tehnoloski', name: 'Kemijsko-tehnološki fakultet', color: '#a9d08e' },
+  { id: 'katolicki-bogoslovni', name: 'Katolički bogoslovni fakultet', color: '#a9d08e' },
+  { id: 'fgag', name: 'Fakultet građevinarstva, arhitekture i geodezije', color: '#a9d08e' },
+  { id: 'kinezioloski', name: 'Kineziološki fakultet', color: '#8ea9db' },
+  { id: 'fesb', name: 'Fakultet elektrotehnike, strojarstva i brodogradnje', color: '#8ea9db' },
+  { id: 'pmf', name: 'Prirodoslovno-matematički fakultet', color: '#8ea9db' },
+  { id: 'pravni', name: 'Pravni fakultet', color: '#8ea9db' },
+  { id: 'umjetnicka-akademija', name: 'Umjetnička akademija', color: '#8ea9db' },
+  { id: 'studiji-mora', name: 'Sveučilišni odjel za studije mora', color: '#8ea9db' },
+  { id: 'zdravstvene-znanosti', name: 'Fakultet zdravstvenih znanosti', color: '#f4b084' },
+  { id: 'filozofski', name: 'Filozofski fakultet', color: '#f4b084' },
+  { id: 'forenzicke-znanosti', name: 'Fakultet za forenzičke znanosti', color: '#f4b084' },
+  { id: 'pomorski', name: 'Pomorski fakultet', color: '#f4b084' },
+  { id: 'agromediteranski', name: 'Agromediteranski fakultet', color: '#f2b8c6' },
+  { id: 'medicinski', name: 'Medicinski fakultet', color: '#f2b8c6' },
+  { id: 'hotelijerstvo-gastronomija', name: 'Sveučilišni studij Hotelijerstvo i gastronomija', color: '#f2b8c6' },
+  { id: 'strucni-studiji', name: 'Sveučilišni odjel za stručne studije', color: '#f2b8c6' },
+  { id: 'komunikacija-mediji', name: 'Sveučilišni studij Komunikacija i mediji', color: '#f2b8c6' },
 ];
 
 export function facultyById(id: string | null | undefined): Faculty | undefined {
   return FACULTIES.find((f) => f.id === id);
-}
-
-export function dayOf(f: Faculty): Day {
-  return DAYS.find((d) => d.id === f.day)!;
-}
-
-export function slotLabel(f: Faculty): string {
-  const d = dayOf(f);
-  return `${d.label} ${EVENT.year}. u ${f.hour} h`;
 }
 
 /** Relative luminance (0 = black, 1 = white). */
