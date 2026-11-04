@@ -29,6 +29,26 @@ stand (back wall 2–4, and optionally the inner side walls 7, 8, 1 and 5, 6) an
 
 Open a ZIP with **Učitaj ZIP** to see the layout in the editor.
 
+**Primjer** (toolbar, and a link on the welcome screen) opens `public/primjeri/soss-2025.zip`:
+the stand of Sveučilišni odjel za stručne studije from Smotra 2025, converted from their
+print PDF (panels 7, 8, 1–5; panel 6 left in the faculty colour). It goes through the same
+import as **Učitaj ZIP**, so it asks before replacing existing work.
+
+## Stand dimensions
+
+Stand 3 × 2 m, numbered as on the organiser's sketch. The editor uses the visible panel sizes;
+the print files (forex fills) are a little larger because their edges go into the profile.
+
+| Panel | Where | Visible (mm) | Print fill (mm) |
+| --- | --- | --- | --- |
+| 1–6 | 1 left wall back, 2–4 back wall, 5–6 right wall | 950 × 2350 | 962 × 2355 |
+| 7–8 | left wall by the counter | 455 × 2350 | 467 × 2355 |
+| 9 / 10 | counter front / side (organiser) | 950 × 855 | 962 × 855 / 467 × 855 |
+| 11 / 12 | header boards (organiser) | 1940 / 950 × 330 | 1952 / 962 × 335 |
+
+The counter stands in front of panel 7 and hides its lower 855 mm; the editor warns about
+content placed there. `sazetak.txt` and `raspored.json` list both sizes for every panel.
+
 ## Changing the stand
 
 Sizes, panel order, which walls are editable and print thresholds live in `src/booth.ts`.

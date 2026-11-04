@@ -1,4 +1,4 @@
-import { PRINT, type Layout, panelsTouched } from './booth';
+import { BOOTH, PRINT, type Layout, panelsTouched } from './booth';
 import type { BoothCanvas } from './canvas';
 import type { FileEntry } from './files';
 import type { ImageItem, Item, Store } from './state';
@@ -55,6 +55,15 @@ export function computeIssues({ store, canvas, layout }: Ctx): Issue[] {
             walls.size > 1
               ? `${label} prelazi preko kuta štanda (paneli ${ids} su na različitim zidovima).`
               : `${label} prelazi preko spoja panela ${ids} — kroz njega prolazi aluminijski profil.`,
+        });
+      }
+      const hidden = touched.find((t) => t.panel.id === BOOTH.hiddenByCounter);
+      // Full-height backgrounds are fine; warn about content placed behind the counter.
+      if (hidden && box.h < BOOTH.wallHeight * 0.9 && box.y + box.h > BOOTH.wallHeight - BOOTH.organizer.counter.height) {
+        out.push({
+          level: 'warn',
+          itemId: it.id,
+          text: `${label} je u donjih ${Math.round(BOOTH.organizer.counter.height / 10)} cm panela ${BOOTH.hiddenByCounter}, koje zaklanja pult. Pomaknite ga više.`,
         });
       }
       const inside = touched.reduce((s, t) => s + t.area, 0);

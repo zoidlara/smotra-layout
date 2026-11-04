@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import type { App } from './app';
-import { BOOTH, panelsTouched, primaryPanel, wallName } from './booth';
+import { BOOTH, panelsTouched, primaryPanel, printFill, wallName } from './booth';
 import { EVENT, GROUPS } from './event';
 import { computeIssues, effectiveDpi } from './issues';
 import { type Doc, type Item, normalizeDoc } from './state';
@@ -74,12 +74,15 @@ function summary(app: App, report: ReturnType<typeof describe>[]): string {
   lines.push(`Izvezeno: ${new Date().toLocaleString('hr-HR')}`, '');
   if (ex.note.trim()) lines.push('Napomena izlagača:', ex.note.trim(), '');
   lines.push('Položaji su u milimetrima, mjereni od gornjeg lijevog kuta panela.');
-  lines.push('Rotacija je u smjeru kazaljke na satu, oko gornjeg lijevog kuta elementa.', '');
+  lines.push('Rotacija je u smjeru kazaljke na satu, oko gornjeg lijevog kuta elementa.');
+  lines.push('Ispuna za tisak je ~6 mm šira sa svake strane i 5 mm viša od vidljivog dijela (ulazi u profil).');
+  lines.push(`Pult zaklanja donjih ${BOOTH.organizer.counter.height} mm panela ${BOOTH.hiddenByCounter}.`, '');
 
   for (const w of app.layout.walls) {
     lines.push('='.repeat(60), wallName(w.kind, w.id).toUpperCase(), '='.repeat(60));
     for (const p of w.panels) {
-      lines.push('', `Panel ${p.id}  (${p.w} × ${p.h} mm)  pozadina: ${color}`);
+      const fill = printFill(p.w);
+      lines.push('', `Panel ${p.id}  (vidljivo ${p.w} × ${p.h} mm, ispuna za tisak ${fill.width} × ${fill.height} mm)  pozadina: ${color}`);
       const own = report.filter((r) => r.panel === p.id);
       if (!own.length) lines.push('  — prazno —');
       for (const r of own) {
@@ -154,7 +157,9 @@ export async function buildZip(app: App): Promise<{ blob: Blob; filename: string
           wall_height: BOOTH.wallHeight,
           panel_color: f?.color ?? '#ffffff',
           header_text: f?.name ?? '',
-          panels: BOOTH.walls.flatMap((w) => w.panels.map((p) => ({ id: p.id, wall: w.id, editable: w.editable, width: p.width, height: BOOTH.wallHeight }))),
+          panels: BOOTH.walls.flatMap((w) =>
+            w.panels.map((p) => ({ id: p.id, wall: w.id, editable: w.editable, width: p.width, height: BOOTH.wallHeight, print_fill: printFill(p.width) })),
+          ),
         },
         elements: report,
         materials: store.doc.materials.map((id) => files[id]).filter(Boolean),

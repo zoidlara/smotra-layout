@@ -73,7 +73,22 @@ export const BOOTH = {
     ],
     counter: { front: '9', side: '10', width: 950, height: 855, depth: 455 },
   },
+  /** The counter stands in front of this panel and hides its lower part (counter height). */
+  hiddenByCounter: '7',
+  /**
+   * Print sizes of the forex fills from the organiser (vice-rector's email, 3 Nov 2026).
+   * Slightly larger than the visible panel: the extra edge goes into the aluminium profile.
+   */
+  printFill: {
+    wide: { width: 962, height: 2355 },
+    narrow: { width: 467, height: 2355 },
+  },
 };
+
+/** Print size (forex fill) for a wall panel of the given visible width. */
+export function printFill(visibleWidth: number) {
+  return visibleWidth > 600 ? BOOTH.printFill.wide : BOOTH.printFill.narrow;
+}
 
 export const PRINT = {
   /** Effective resolution at final print size. */

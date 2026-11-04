@@ -319,6 +319,19 @@ export class App {
     }
   }
 
+  /** Opens the bundled example (SOSS stand from Smotra 2025) through the normal ZIP import. */
+  async loadExample() {
+    try {
+      const res = await fetch(`${import.meta.env.BASE_URL}primjeri/soss-2025.zip`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const blob = await res.blob();
+      await this.importZip(new File([blob], 'soss-2025.zip', { type: 'application/zip' }));
+    } catch (e) {
+      console.error(e);
+      toast('Primjer se nije učitao. Pokušajte ponovno.', 'error');
+    }
+  }
+
   reset() {
     if (!confirm('Obrisati cijeli raspored i početi ispočetka?\n\nOvo se ne može poništiti. Ako želite sačuvati rad, prvo ga pošaljite ili preuzmite.')) return;
     this.store.replace(emptyDoc(), new Map());
@@ -423,6 +436,10 @@ export class App {
       this.setFaculty(sel.value);
       this.welcome.hidden = true;
     });
+    document.getElementById('welcome-example')!.addEventListener('click', () => {
+      this.welcome.hidden = true;
+      void this.loadExample();
+    });
   }
 
   // ---------- wiring ----------
@@ -444,6 +461,7 @@ export class App {
     on('btn-new', () => this.reset());
     on('btn-send', () => this.sendDialog.open());
     on('btn-load', () => this.pick('file-zip', ([f]) => void this.importZip(f)));
+    on('btn-example', () => void this.loadExample());
   }
 
   private updateZoomLabel() {
