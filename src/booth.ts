@@ -17,15 +17,20 @@ export interface WallSpec {
   panels: { id: string; width: number }[];
 }
 
+/**
+ * Stand 3 × 2 m (organiser, Nov 2026): back wall 3 × 950 mm, right side 2 × 950 mm,
+ * left side (by the counter) 455 + 950 + 455 mm. All panels 2350 mm high.
+ */
 const WALLS: WallSpec[] = [
   {
     id: 'left',
     kind: 'side',
     title: 'BOČNI ZID',
-    subtitle: 'lijevo',
+    subtitle: 'lijevo, uz pult',
     editable: true,
     panels: [
       { id: '7', width: 455 },
+      { id: '6', width: 950 },
       { id: '8', width: 455 },
     ],
   },
@@ -36,10 +41,9 @@ const WALLS: WallSpec[] = [
     subtitle: 'nasuprot posjetiteljima',
     editable: true,
     panels: [
-      { id: '1', width: 40 },
+      { id: '1', width: 950 },
       { id: '2', width: 950 },
       { id: '3', width: 950 },
-      { id: '4', width: 950 },
     ],
   },
   {
@@ -49,8 +53,8 @@ const WALLS: WallSpec[] = [
     subtitle: 'desno',
     editable: true,
     panels: [
-      { id: '5', width: 455 },
-      { id: '6', width: 455 },
+      { id: '4', width: 950 },
+      { id: '5', width: 950 },
     ],
   },
 ];
@@ -66,7 +70,7 @@ export const BOOTH = {
       { id: '11', width: 1940, height: 330 },
       { id: '12', width: 950, height: 330 },
     ],
-    counter: { front: '9', side: '10', width: 950, height: 855, depth: 500 },
+    counter: { front: '9', side: '10', width: 950, height: 855, depth: 455 },
   },
 };
 

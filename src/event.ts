@@ -14,37 +14,50 @@ export const EVENT = {
   maxEmailMb: 20,
 };
 
+/** Science-field groups from the organiser (CMYK for print, sRGB for the screen). */
+export const GROUPS = {
+  drustvene: { name: 'Društvene i humanističke znanosti', cmyk: 'C0 M85 Y100 K0', color: '#ff541e' },
+  tehnicke: { name: 'Tehničke znanosti', cmyk: 'C95 M65 Y0 K0', color: '#0061af' },
+  prirodne: { name: 'Prirodne i biotehničke znanosti', cmyk: 'C70 M33 Y7 K0', color: '#4c90c2' },
+  biomedicina: { name: 'Biomedicina i zdravstvo', cmyk: 'C30 M4 Y0 K5', color: '#a4cde7' },
+  interdisciplinarne: { name: 'Interdisciplinarne znanosti', cmyk: 'C25 M25 Y40 K0', color: '#c4b79a' },
+  // The organiser writes "C0 M0 Y77 K0", but their swatch is the brand pink (R255 G105 B172).
+  umjetnost: { name: 'Umjetničko područje', cmyk: 'C0 M77 Y0 K0', color: '#ff69ac' },
+} as const;
+
+export type GroupId = keyof typeof GROUPS;
+
 export interface Faculty {
   id: string;
   name: string;
-  /** Panel colour for every panel of this faculty's stand. */
+  group: GroupId;
+  /** Panel colour for every panel of this faculty's stand (the group colour). */
   color: string;
 }
 
-/**
- * Colours are placeholders (taken from the printed schedule).
- * Replace each faculty's `color` with its official colour.
- */
+const F = (id: string, name: string, group: GroupId): Faculty => ({ id, name, group, color: GROUPS[group].color });
+
+/** Ids stay the same so saved layouts keep their faculty. */
 export const FACULTIES: Faculty[] = [
-  { id: 'ekonomski', name: 'Ekonomski fakultet', color: '#a9d08e' },
-  { id: 'kemijsko-tehnoloski', name: 'Kemijsko-tehnološki fakultet', color: '#a9d08e' },
-  { id: 'katolicki-bogoslovni', name: 'Katolički bogoslovni fakultet', color: '#a9d08e' },
-  { id: 'fgag', name: 'Fakultet građevinarstva, arhitekture i geodezije', color: '#a9d08e' },
-  { id: 'kinezioloski', name: 'Kineziološki fakultet', color: '#8ea9db' },
-  { id: 'fesb', name: 'Fakultet elektrotehnike, strojarstva i brodogradnje', color: '#8ea9db' },
-  { id: 'pmf', name: 'Prirodoslovno-matematički fakultet', color: '#8ea9db' },
-  { id: 'pravni', name: 'Pravni fakultet', color: '#8ea9db' },
-  { id: 'umjetnicka-akademija', name: 'Umjetnička akademija', color: '#8ea9db' },
-  { id: 'studiji-mora', name: 'Sveučilišni odjel za studije mora', color: '#8ea9db' },
-  { id: 'zdravstvene-znanosti', name: 'Fakultet zdravstvenih znanosti', color: '#f4b084' },
-  { id: 'filozofski', name: 'Filozofski fakultet', color: '#f4b084' },
-  { id: 'forenzicke-znanosti', name: 'Fakultet za forenzičke znanosti', color: '#f4b084' },
-  { id: 'pomorski', name: 'Pomorski fakultet', color: '#f4b084' },
-  { id: 'agromediteranski', name: 'Agromediteranski fakultet', color: '#f2b8c6' },
-  { id: 'medicinski', name: 'Medicinski fakultet', color: '#f2b8c6' },
-  { id: 'hotelijerstvo-gastronomija', name: 'Sveučilišni studij Hotelijerstvo i gastronomija', color: '#f2b8c6' },
-  { id: 'strucni-studiji', name: 'Sveučilišni odjel za stručne studije', color: '#f2b8c6' },
-  { id: 'komunikacija-mediji', name: 'Sveučilišni studij Komunikacija i mediji', color: '#f2b8c6' },
+  F('ekonomski', 'Ekonomski fakultet', 'drustvene'),
+  F('filozofski', 'Filozofski fakultet', 'drustvene'),
+  F('katolicki-bogoslovni', 'Katoličko-bogoslovni fakultet', 'drustvene'),
+  F('kinezioloski', 'Kineziološki fakultet', 'drustvene'),
+  F('pravni', 'Pravni fakultet', 'drustvene'),
+  F('hotelijerstvo-gastronomija', 'Sveučilišni studij Hotelijerstvo i gastronomija', 'drustvene'),
+  F('komunikacija-mediji', 'Sveučilišni studij Komunikacija i mediji', 'drustvene'),
+  F('fesb', 'Fakultet elektrotehnike, strojarstva i brodogradnje', 'tehnicke'),
+  F('fgag', 'Fakultet građevinarstva, arhitekture i geodezije', 'tehnicke'),
+  F('pomorski', 'Pomorski fakultet', 'tehnicke'),
+  F('agromediteranski', 'Agromediteranski fakultet', 'prirodne'),
+  F('studiji-mora', 'Fakultet znanosti o moru', 'prirodne'),
+  F('pmf', 'Prirodoslovno-matematički fakultet', 'prirodne'),
+  F('kemijsko-tehnoloski', 'Kemijsko-tehnološki fakultet', 'prirodne'),
+  F('medicinski', 'Medicinski fakultet', 'biomedicina'),
+  F('zdravstvene-znanosti', 'Fakultet zdravstvenih znanosti', 'biomedicina'),
+  F('strucni-studiji', 'Sveučilišni odjel za stručne studije', 'interdisciplinarne'),
+  F('forenzicke-znanosti', 'Fakultet za forenzičke znanosti', 'interdisciplinarne'),
+  F('umjetnicka-akademija', 'Umjetnička akademija', 'umjetnost'),
 ];
 
 export function facultyById(id: string | null | undefined): Faculty | undefined {

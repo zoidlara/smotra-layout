@@ -1435,3 +1435,12 @@ svg {
   height: 38px;
   padding: 0 18px;
 }
+
+.group-sw {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: -1px;
+}

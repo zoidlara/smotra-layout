@@ -1,7 +1,7 @@
 import JSZip from 'jszip';
 import type { App } from './app';
 import { BOOTH, panelsTouched, primaryPanel, wallName } from './booth';
-import { EVENT } from './event';
+import { EVENT, GROUPS } from './event';
 import { computeIssues, effectiveDpi } from './issues';
 import { type Doc, type Item, normalizeDoc } from './state';
 import type { SavedFile } from './storage';
@@ -67,7 +67,7 @@ function summary(app: App, report: ReturnType<typeof describe>[]): string {
   const lines: string[] = [];
   lines.push(`RASPORED ŠTANDA — ${EVENT.name.toUpperCase()} ${EVENT.year}`, '');
   lines.push(`Sastavnica: ${f?.name ?? '(nije odabrana)'}`);
-  lines.push(`Boja:       ${color}  (svi paneli 1–8)`);
+  lines.push(`Boja:       ${f ? `${GROUPS[f.group].name}, ${GROUPS[f.group].cmyk} (${color})` : color}  (svi paneli 1–8)`);
   lines.push(`Natpis:     paneli 11 i 12 — „${f?.name.toUpperCase() ?? ''}”`);
   if (ex.contact) lines.push(`Kontakt:  ${ex.contact}`);
   if (ex.email) lines.push(`E-mail:   ${ex.email}`);
@@ -147,7 +147,7 @@ export async function buildZip(app: App): Promise<{ blob: Blob; filename: string
         version: 1,
         exported_at: new Date().toISOString(),
         event: { name: EVENT.name, dates: EVENT.dates, place: EVENT.place },
-        faculty: f ? { id: f.id, name: f.name, color: f.color } : null,
+        faculty: f ? { id: f.id, name: f.name, group: GROUPS[f.group].name, cmyk: GROUPS[f.group].cmyk, color: f.color } : null,
         contact: { name: store.doc.exhibitor.contact, email: store.doc.exhibitor.email, note: store.doc.exhibitor.note },
         units: 'mm',
         booth: {

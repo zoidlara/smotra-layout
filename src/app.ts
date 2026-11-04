@@ -1,6 +1,6 @@
 import { BOOTH, type PanelLayout, computeLayout, nearestPanel, panelAt, primaryPanel } from './booth';
 import { BoothCanvas } from './canvas';
-import { EVENT, FACULTIES, drawFascia, facultyById, textOn } from './event';
+import { EVENT, FACULTIES, GROUPS, drawFascia, facultyById, textOn } from './event';
 import { type FileEntry, isPlaceableImage, loadImageEntry, rawEntry } from './files';
 import { computeIssues } from './issues';
 import { FloorPlan } from './plan';
@@ -398,7 +398,7 @@ export class App {
     const f = this.faculty;
     const info = document.getElementById('faculty-info')!;
     info.innerHTML = f
-      ? ''
+      ? `<p class="hint"><i class="group-sw" style="background:${f.color}"></i>${esc(GROUPS[f.group].name)} · ${GROUPS[f.group].cmyk}</p>`
       : '<p class="hint">Odabirom sastavnice postavljaju se boja svih panela i natpis iznad štanda.</p>';
     const c = document.getElementById('fascia-preview') as HTMLCanvasElement;
     const total = BOOTH.organizer.fascia.reduce((n, x) => n + x.width, 0);
