@@ -18,8 +18,9 @@ export interface WallSpec {
 }
 
 /**
- * Stand 3 × 2 m (organiser, Nov 2026): back wall 3 × 950 mm, right side 2 × 950 mm,
- * left side (by the counter) 455 + 950 + 455 mm. All panels 2350 mm high.
+ * Stand 3 × 2 m, numbered as on the organiser's sketch (fills 1–6 are 950 mm, 7–8 are 455 mm):
+ * left wall by the counter 7 + 8 + 1 (front → back), back wall 2 + 3 + 4, right wall 5 + 6
+ * (back → front). All panels 2350 mm high.
  */
 const WALLS: WallSpec[] = [
   {
@@ -30,8 +31,8 @@ const WALLS: WallSpec[] = [
     editable: true,
     panels: [
       { id: '7', width: 455 },
-      { id: '6', width: 950 },
       { id: '8', width: 455 },
+      { id: '1', width: 950 },
     ],
   },
   {
@@ -41,9 +42,9 @@ const WALLS: WallSpec[] = [
     subtitle: 'nasuprot posjetiteljima',
     editable: true,
     panels: [
-      { id: '1', width: 950 },
       { id: '2', width: 950 },
       { id: '3', width: 950 },
+      { id: '4', width: 950 },
     ],
   },
   {
@@ -53,8 +54,8 @@ const WALLS: WallSpec[] = [
     subtitle: 'desno',
     editable: true,
     panels: [
-      { id: '4', width: 950 },
       { id: '5', width: 950 },
+      { id: '6', width: 950 },
     ],
   },
 ];

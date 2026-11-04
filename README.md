@@ -1,7 +1,7 @@
 # Raspored štanda (Smotra Sveučilišta u Splitu)
 
 A small web app where each faculty of the University of Split lays out the walls of its
-stand (back wall 1–3, and optionally the inner side walls 4–8) and sends the result to the organiser as one ZIP file.
+stand (back wall 2–4, and optionally the inner side walls 7, 8, 1 and 5, 6) and sends the result to the organiser as one ZIP file.
 
 - The faculty is chosen from a dropdown. That sets the colour of every panel (1–8) and the
   name on the header boards (11 + 12); exhibitors can't change either.

@@ -74,7 +74,7 @@ export class App {
       if (b) return primaryPanel(this.layout, b);
     }
     const c = this.canvas.viewCenter();
-    return panelAt(this.layout, c.x, c.y) ?? this.layout.panel('2')!;
+    return panelAt(this.layout, c.x, c.y) ?? this.layout.panel('3')!;
   }
 
   pickImages(panelId?: string) {
