@@ -41,7 +41,7 @@ const F = (id: string, name: string, group: GroupId): Faculty => ({ id, name, gr
 export const FACULTIES: Faculty[] = [
   F('ekonomski', 'Ekonomski fakultet', 'drustvene'),
   F('filozofski', 'Filozofski fakultet', 'drustvene'),
-  F('katolicki-bogoslovni', 'Katoličko-bogoslovni fakultet', 'drustvene'),
+  F('katolicki-bogoslovni', 'Katolički bogoslovni fakultet', 'drustvene'),
   F('kinezioloski', 'Kineziološki fakultet', 'drustvene'),
   F('pravni', 'Pravni fakultet', 'drustvene'),
   F('hotelijerstvo-gastronomija', 'Sveučilišni studij Hotelijerstvo i gastronomija', 'drustvene'),
@@ -50,7 +50,7 @@ export const FACULTIES: Faculty[] = [
   F('fgag', 'Fakultet građevinarstva, arhitekture i geodezije', 'tehnicke'),
   F('pomorski', 'Pomorski fakultet', 'tehnicke'),
   F('agromediteranski', 'Agromediteranski fakultet', 'prirodne'),
-  F('studiji-mora', 'Fakultet znanosti o moru', 'prirodne'),
+  F('studiji-mora', 'Sveučilišni odjel za studije mora', 'prirodne'),
   F('pmf', 'Prirodoslovno-matematički fakultet', 'prirodne'),
   F('kemijsko-tehnoloski', 'Kemijsko-tehnološki fakultet', 'prirodne'),
   F('medicinski', 'Medicinski fakultet', 'biomedicina'),
