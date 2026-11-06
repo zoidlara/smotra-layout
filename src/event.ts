@@ -102,10 +102,86 @@ export function textOn(bg: string): string {
 }
 
 /**
- * Draws the header boards 11 + 12 (one name across both, like the organiser's sketch).
- * `split` is where board 11 ends, as a fraction of the width.
+ * Ready-made header boards (version C2 from the organiser): board 11 has the name in Boogy Brut
+ * capitals, board 12 the logo in one colour, both on the panel colour. Rendered from the print files
+ * into public/fascia/<id>-11.png and <id>-12.png (pre-rendered so the trial fonts are not shipped).
+ */
+const boards = new Map<string, Promise<[HTMLImageElement, HTMLImageElement]>>();
+const ready = new Map<string, [HTMLImageElement, HTMLImageElement]>();
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((ok, fail) => {
+    const img = new Image();
+    img.onload = () => ok(img);
+    img.onerror = fail;
+    img.src = src;
+  });
+}
+
+/** Round University seal for the counter front (as in version C2). */
+let seal: HTMLImageElement | null = null;
+const sealLoad = loadImage(`${import.meta.env.BASE_URL}unist-pecat.png`).then((img) => (seal = img)).catch(() => null);
+
+/**
+ * Counter front 9 as in version C2: the round University seal on the panel colour,
+ * white on dark colours and dark blue on light ones. Returns null until the seal has loaded.
+ */
+export function drawCounterFront(c: HTMLCanvasElement, color: string): boolean {
+  if (!seal) return false;
+  const ctx = c.getContext('2d')!;
+  const { width: w, height: h } = c;
+  ctx.clearRect(0, 0, w, h);
+  const d = Math.min(w, h) * 0.62;
+  const ink = document.createElement('canvas');
+  ink.width = ink.height = Math.max(1, Math.round(d));
+  const ic = ink.getContext('2d')!;
+  ic.drawImage(seal, 0, 0, ink.width, ink.height);
+  ic.globalCompositeOperation = 'source-in';
+  ic.fillStyle = luminance(color) > 0.35 ? GROUPS.tehnicke.color : '#ffffff';
+  ic.fillRect(0, 0, ink.width, ink.height);
+  ctx.fillStyle = color;
+  ctx.fillRect(0, 0, w, h);
+  ctx.drawImage(ink, (w - d) / 2, (h - d) / 2, d, d);
+  return true;
+}
+
+/** Loads the header boards for a faculty; resolves once drawFascia can draw them. */
+export function loadFascia(f: Faculty | undefined): Promise<void> {
+  if (!f) return sealLoad.then(() => undefined);
+  let p = boards.get(f.id);
+  if (!p) {
+    const base = `${import.meta.env.BASE_URL}fascia/${f.id}`;
+    p = Promise.all([loadImage(`${base}-11.png`), loadImage(`${base}-12.png`)]);
+    boards.set(f.id, p);
+    p.then((imgs) => ready.set(f.id, imgs)).catch(() => {});
+  }
+  return Promise.all([p, sealLoad]).then(() => undefined).catch(() => undefined);
+}
+
+/**
+ * Draws the header boards 11 + 12. `split` is where board 11 ends, as a fraction of the width
+ * (1 = only board 12, as above the library counter). Falls back to plain text until the boards load.
  */
 export function drawFascia(c: HTMLCanvasElement, f: Faculty | undefined, split: number) {
+  const imgs = f && ready.get(f.id);
+  if (!imgs) return drawFasciaText(c, f, split);
+  const ctx = c.getContext('2d')!;
+  const { width: w, height: h } = c;
+  ctx.clearRect(0, 0, w, h);
+  ctx.imageSmoothingQuality = 'high';
+  const [b11, b12] = imgs;
+  if (split >= 0.999) {
+    ctx.drawImage(b12, 0, 0, w, h);
+    return;
+  }
+  const x = Math.round(w * split);
+  ctx.drawImage(b11, 0, 0, x, h);
+  ctx.drawImage(b12, x, 0, w - x, h);
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
+  ctx.fillRect(x - 1, 0, 2, h);
+}
+
+function drawFasciaText(c: HTMLCanvasElement, f: Faculty | undefined, split: number) {
   const ctx = c.getContext('2d')!;
   const { width: w, height: h } = c;
   ctx.clearRect(0, 0, w, h);

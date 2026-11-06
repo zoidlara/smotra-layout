@@ -1011,7 +1011,7 @@ svg {
 }
 
 .p3d-face.org {
-  background: #e5e9ef;
+  background-color: #e5e9ef;
   border: 1px solid #b8c2ce;
   display: grid;
   place-items: center;

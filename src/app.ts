@@ -1,6 +1,6 @@
 import { BOOTH, type PanelLayout, STAND_ID, computeLayout, nearestPanel, panelAt, primaryPanel, standName, storeStand } from './booth';
 import { BoothCanvas } from './canvas';
-import { EVENT, FACULTIES, GROUPS, drawFascia, facultyById, textOn } from './event';
+import { EVENT, FACULTIES, GROUPS, drawFascia, facultyById, loadFascia, textOn } from './event';
 import { type FileEntry, isPlaceableImage, loadImageEntry, rawEntry } from './files';
 import { computeIssues } from './issues';
 import { FloorPlan } from './plan';
@@ -468,6 +468,10 @@ export class App {
     const fascia = BOOTH.organizer.fascia;
     const total = fascia.reduce((n, x) => n + x.width, 0);
     drawFascia(c, f, fascia.length ? fascia[0].width / total : 1);
+    // Redraw once the ready-made boards have loaded.
+    loadFascia(f).then(() => {
+      if (this.faculty === f) drawFascia(c, f, fascia.length ? fascia[0].width / total : 1);
+    });
     document.getElementById('brand-faculty')!.textContent = f ? f.name : EVENT.dates;
   }
 

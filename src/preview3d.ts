@@ -1,6 +1,6 @@
 import type { App } from './app';
 import { BOOTH, IS_COUNTER, type WallSpec, wallLength, wallSpec } from './booth';
-import { drawFascia } from './event';
+import { drawCounterFront, drawFascia } from './event';
 import { clamp } from './util';
 
 /** Simple CSS 3D model of the stand with the walls' current artwork as textures. */
@@ -131,8 +131,14 @@ export class Preview3D {
       const cd = counter.depth * s;
       const ccx = -sW / 2 + cw / 2;
       const ccy = sH / 2 - ch / 2;
-      face(cw, ch, `translate3d(${ccx}px, ${ccy}px, ${sD / 2}px)`, 'org counter', { html: `<span>LOGO SMOTRE<br><small>${counter.front}</small></span>` });
-      face(cd, ch, `translate3d(${ccx + cw / 2}px, ${ccy}px, ${sD / 2 - cd / 2}px) rotateY(90deg)`, 'org counter side', { html: `<small>${counter.side}</small>` });
+      // Front 9 as in version C2 (University seal on the panel colour); the side in the panel colour.
+      const front = document.createElement('canvas');
+      front.width = Math.round(counter.width * texPx);
+      front.height = Math.round(counter.height * texPx);
+      const drawn = faculty ? drawCounterFront(front, color) : false;
+      face(cw, ch, `translate3d(${ccx}px, ${ccy}px, ${sD / 2}px)`, 'org counter', drawn ? { img: front.toDataURL('image/png') } : { html: `<span>LOGO SMOTRE<br><small>${counter.front}</small></span>` });
+      face(cd, ch, `translate3d(${ccx + cw / 2}px, ${ccy}px, ${sD / 2 - cd / 2}px) rotateY(90deg)`, 'org counter side', faculty ? {} : { html: `<small>${counter.side}</small>` });
+      if (faculty) (this.booth.lastElementChild as HTMLElement).style.backgroundColor = color;
       face(cw, cd, `translate3d(${ccx}px, ${sH / 2 - ch}px, ${sD / 2 - cd / 2}px) rotateX(90deg)`, 'org counter top');
     }
   }
