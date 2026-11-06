@@ -461,7 +461,7 @@ export class App {
     const f = this.faculty;
     const info = document.getElementById('faculty-info')!;
     info.innerHTML = f
-      ? `<p class="hint"><i class="group-sw" style="background:${f.color}"></i>${esc(GROUPS[f.group].name)} · ${GROUPS[f.group].cmyk}</p>` +
+      ? `<p class="hint"><i class="group-sw" style="background:${f.color}"></i>${esc(GROUPS[f.group].name)} · ${f.cmyk}</p>` +
         (f.stand !== 'standard' ? `<p class="hint"><b>${esc(standName(f.stand))}</b></p>` : '')
       : '<p class="hint">Odabirom sastavnice postavljaju se boja svih panela i natpis iznad štanda.</p>';
     const c = document.getElementById('fascia-preview') as HTMLCanvasElement;

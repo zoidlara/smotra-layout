@@ -67,7 +67,7 @@ function summary(app: App, report: ReturnType<typeof describe>[]): string {
   const lines: string[] = [];
   lines.push(`RASPORED ŠTANDA — ${EVENT.name.toUpperCase()} ${EVENT.year}`, '');
   lines.push(`Sastavnica: ${f?.name ?? '(nije odabrana)'}`);
-  lines.push(`Boja:       ${f ? `${GROUPS[f.group].name}, ${GROUPS[f.group].cmyk} (${color})` : color}  (svi paneli)`);
+  lines.push(`Boja:       ${f ? `${GROUPS[f.group].name}, ${f.cmyk} (${color})` : color}  (svi paneli)`);
   if (BOOTH.organizer.fascia.length) lines.push(`Natpis:     paneli ${BOOTH.organizer.fascia.map((x) => x.id).join(' i ')} — „${f?.name.toUpperCase() ?? ''}”`);
   if (ex.contact) lines.push(`Kontakt:  ${ex.contact}`);
   if (ex.email) lines.push(`E-mail:   ${ex.email}`);
@@ -153,7 +153,7 @@ export async function buildZip(app: App): Promise<{ blob: Blob; filename: string
         version: 1,
         exported_at: new Date().toISOString(),
         event: { name: EVENT.name, dates: EVENT.dates, place: EVENT.place },
-        faculty: f ? { id: f.id, name: f.name, group: GROUPS[f.group].name, cmyk: GROUPS[f.group].cmyk, color: f.color } : null,
+        faculty: f ? { id: f.id, name: f.name, group: GROUPS[f.group].name, cmyk: f.cmyk, color: f.color } : null,
         contact: { name: store.doc.exhibitor.contact, email: store.doc.exhibitor.email, note: store.doc.exhibitor.note },
         units: 'mm',
         booth: {

@@ -36,13 +36,23 @@ export interface Faculty {
   id: string;
   name: string;
   group: GroupId;
-  /** Panel colour for every panel of this faculty's stand (the group colour). */
+  /** Panel colour for every panel of this faculty's stand (the group colour unless overridden). */
   color: string;
+  /** CMYK of the panel colour, for print. */
+  cmyk: string;
   /** Kind of stand; most get the standard 3 × 2 m stand. */
   stand: StandId;
 }
 
-const F = (id: string, name: string, group: GroupId, stand: StandId = 'standard'): Faculty => ({ id, name, group, color: GROUPS[group].color, stand });
+const F = (
+  id: string,
+  name: string,
+  group: GroupId,
+  stand: StandId = 'standard',
+  own?: { color: string; cmyk: string },
+): Faculty => ({ id, name, group, color: own?.color ?? GROUPS[group].color, cmyk: own?.cmyk ?? GROUPS[group].cmyk, stand });
+
+const WHITE = { color: '#ffffff', cmyk: 'C0 M0 Y0 K0' };
 
 /** Ids stay the same so saved layouts keep their faculty. */
 export const FACULTIES: Faculty[] = [
@@ -68,7 +78,7 @@ export const FACULTIES: Faculty[] = [
   F('studentski-centar', 'Studentski centar', 'ostali'),
   F('studentski-zbor', 'Studentski zbor', 'ostali'),
   F('radio-kampus', 'Radio Kampus', 'ostali', 'bez-pulta'),
-  F('sveucilisna-knjiznica', 'Sveučilišna knjižnica', 'ostali', 'pult'),
+  F('sveucilisna-knjiznica', 'Sveučilišna knjižnica', 'ostali', 'pult', WHITE),
   F('sluzbe-rektorata', 'Službe Rektorata Sveučilišta u Splitu', 'ostali', 'veliki-zid'),
 ];
 
