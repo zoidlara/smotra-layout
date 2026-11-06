@@ -1,4 +1,4 @@
-import { BOOTH, type PanelLayout, computeLayout, nearestPanel, panelAt, primaryPanel } from './booth';
+import { BOOTH, type PanelLayout, STAND_ID, computeLayout, nearestPanel, panelAt, primaryPanel, standName, storeStand } from './booth';
 import { BoothCanvas } from './canvas';
 import { EVENT, FACULTIES, GROUPS, drawFascia, facultyById, textOn } from './event';
 import { type FileEntry, isPlaceableImage, loadImageEntry, rawEntry } from './files';
@@ -51,8 +51,30 @@ export class App {
     this.bindKeys();
     this.loadFonts();
     this.updateUndoButtons();
+    this.applyStandTexts();
     this.renderFaculty();
     void this.restore();
+  }
+
+  /** The page text describes the standard stand; adjust it for the other stand types. */
+  private applyStandTexts() {
+    if (STAND_ID === 'standard') return;
+    const set = (sel: string, html: string) => {
+      const el = document.querySelector(sel);
+      if (el) el.innerHTML = html;
+    };
+    const legend = document.querySelector('.sw.back')?.closest('ul');
+    if (STAND_ID === 'bez-pulta') {
+      set('.stage-caption', 'Stražnji zid (paneli 2–4) u sredini, bočni zidovi lijevo (7, 8, 1) i desno (5, 6). Štand nema pult. Prazni paneli ostaju u boji sastavnice.');
+      if (legend) legend.lastElementChild!.innerHTML = '<i class="sw org"></i><span><b>Organizator</b> — natpis (11–12)</span>';
+      return;
+    }
+    const n = BOOTH.walls[0].panels.length;
+    const ids = n === 1 ? 'panel 1' : `paneli 1–${n}`;
+    set('.stage-caption', n === 1 ? `${standName(STAND_ID)}. Prazan dio ostaje u boji izlagača.` : `${standName(STAND_ID)}: ${ids}, jedan do drugog. Prazni paneli ostaju u boji izlagača.`);
+    set('.fascia-label', 'Naziv izlagača i boja panela');
+    if (legend) legend.innerHTML = `<li><i class="sw back"></i><span><b>${n === 1 ? 'Ploča' : 'Zid'}</b> — ${ids}, uređujete vi</span></li>`;
+    document.querySelectorAll<HTMLElement>('[data-view="left"], [data-view="right"]').forEach((b) => (b.style.display = 'none'));
   }
 
   get faculty() {
@@ -74,7 +96,7 @@ export class App {
       if (b) return primaryPanel(this.layout, b);
     }
     const c = this.canvas.viewCenter();
-    return panelAt(this.layout, c.x, c.y) ?? this.layout.panel('3')!;
+    return panelAt(this.layout, c.x, c.y) ?? this.layout.panel('3') ?? this.layout.panels[0];
   }
 
   pickImages(panelId?: string) {
@@ -361,6 +383,7 @@ export class App {
     this.store.replace(doc, files);
     this.fillExhibitor();
     this.canvas.fit(false);
+    await this.switchStandIfNeeded();
   }
 
   private async restore() {
@@ -402,20 +425,42 @@ export class App {
   // ---------- faculty ----------
 
   setFaculty(id: string) {
-    if (!facultyById(id) || id === this.store.doc.exhibitor.facultyId) return;
+    const f = facultyById(id);
+    if (!f || id === this.store.doc.exhibitor.facultyId) return;
+    if (f.stand !== STAND_ID && this.store.doc.items.length) {
+      const ok = confirm(`${f.name} ima drugačiji štand (${standName(f.stand)}). Raspored će se prebaciti na taj štand, a elementi koji ne stanu na njegove panele morat će se premjestiti. Nastaviti?`);
+      if (!ok) {
+        this.fillExhibitor();
+        return;
+      }
+    }
     this.store.setExhibitor('facultyId', id);
     this.fillExhibitor();
+    void this.switchStandIfNeeded();
+  }
+
+  /** Each exhibitor has a stand type; the page is laid out for one, so reload when it changes. */
+  private async switchStandIfNeeded(): Promise<boolean> {
+    const f = this.faculty;
+    if (!f || f.stand === STAND_ID) return false;
+    clearTimeout(this.saveTimer);
+    await this.save();
+    if (!storeStand(f.stand)) return false;
+    location.reload();
+    return true;
   }
 
   private renderFaculty() {
     const f = this.faculty;
     const info = document.getElementById('faculty-info')!;
     info.innerHTML = f
-      ? `<p class="hint"><i class="group-sw" style="background:${f.color}"></i>${esc(GROUPS[f.group].name)} · ${GROUPS[f.group].cmyk}</p>`
+      ? `<p class="hint"><i class="group-sw" style="background:${f.color}"></i>${esc(GROUPS[f.group].name)} · ${GROUPS[f.group].cmyk}</p>` +
+        (f.stand !== 'standard' ? `<p class="hint"><b>${esc(standName(f.stand))}</b></p>` : '')
       : '<p class="hint">Odabirom sastavnice postavljaju se boja svih panela i natpis iznad štanda.</p>';
     const c = document.getElementById('fascia-preview') as HTMLCanvasElement;
-    const total = BOOTH.organizer.fascia.reduce((n, x) => n + x.width, 0);
-    drawFascia(c, f, BOOTH.organizer.fascia[0].width / total);
+    const fascia = BOOTH.organizer.fascia;
+    const total = fascia.reduce((n, x) => n + x.width, 0);
+    drawFascia(c, f, fascia.length ? fascia[0].width / total : 1);
     document.getElementById('brand-faculty')!.textContent = f ? f.name : EVENT.dates;
   }
 

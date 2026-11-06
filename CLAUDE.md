@@ -1,7 +1,7 @@
 # Smotra layout editor
 
 Static Vite + TypeScript site (Konva canvas) where University of Split faculties arrange images
-and text on the walls of their stand (back 2–4, sides 7, 8, 1 and 5, 6) and send a ZIP to the organiser. See README.md.
+and text on the walls of their stand (standard stand: back 2–4, sides 7, 8, 1 and 5, 6; other stand types per exhibitor in `src/booth.ts`) and send a ZIP to the organiser. See README.md.
 
 - Booth sizes, panel order, editable walls and print thresholds: `src/booth.ts`.
 - Event details, faculty list, faculty colours and organiser email: `src/event.ts`.

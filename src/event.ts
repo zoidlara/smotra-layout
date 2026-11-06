@@ -1,3 +1,5 @@
+import type { StandId } from './booth';
+
 /** Event details and the list of exhibiting faculties (from the organiser's schedule). */
 
 export const EVENT = {
@@ -23,6 +25,9 @@ export const GROUPS = {
   interdisciplinarne: { name: 'Interdisciplinarne znanosti', cmyk: 'C25 M25 Y40 K0', color: '#c4b79a' },
   // The organiser writes "C0 M0 Y77 K0", but their swatch is the brand pink (R255 G105 B172).
   umjetnost: { name: 'Umjetničko područje', cmyk: 'C0 M77 Y0 K0', color: '#ff69ac' },
+  // Not a science field: student bodies, the library, the radio and the university itself.
+  // Placeholder colour (light blue from the Smotra palette) until the organiser gives one.
+  ostali: { name: 'Ostali izlagači', cmyk: 'C15 M3 Y3 K0', color: '#d5e6ee' },
 } as const;
 
 export type GroupId = keyof typeof GROUPS;
@@ -33,9 +38,11 @@ export interface Faculty {
   group: GroupId;
   /** Panel colour for every panel of this faculty's stand (the group colour). */
   color: string;
+  /** Kind of stand; most get the standard 3 × 2 m stand. */
+  stand: StandId;
 }
 
-const F = (id: string, name: string, group: GroupId): Faculty => ({ id, name, group, color: GROUPS[group].color });
+const F = (id: string, name: string, group: GroupId, stand: StandId = 'standard'): Faculty => ({ id, name, group, color: GROUPS[group].color, stand });
 
 /** Ids stay the same so saved layouts keep their faculty. */
 export const FACULTIES: Faculty[] = [
@@ -50,7 +57,7 @@ export const FACULTIES: Faculty[] = [
   F('fgag', 'Fakultet građevinarstva, arhitekture i geodezije', 'tehnicke'),
   F('pomorski', 'Pomorski fakultet', 'tehnicke'),
   F('agromediteranski', 'Agromediteranski fakultet', 'prirodne'),
-  F('studiji-mora', 'Sveučilišni odjel za studije mora', 'prirodne'),
+  F('studiji-mora', 'Fakultet znanosti o moru', 'prirodne'),
   F('pmf', 'Prirodoslovno-matematički fakultet', 'prirodne'),
   F('kemijsko-tehnoloski', 'Kemijsko-tehnološki fakultet', 'prirodne'),
   F('medicinski', 'Medicinski fakultet', 'biomedicina'),
@@ -58,6 +65,11 @@ export const FACULTIES: Faculty[] = [
   F('strucni-studiji', 'Sveučilišni odjel za stručne studije', 'interdisciplinarne'),
   F('forenzicke-znanosti', 'Fakultet za forenzičke znanosti', 'interdisciplinarne'),
   F('umjetnicka-akademija', 'Umjetnička akademija', 'umjetnost'),
+  F('studentski-centar', 'Studentski centar', 'ostali'),
+  F('studentski-zbor', 'Studentski zbor', 'ostali'),
+  F('radio-kampus', 'Radio Kampus', 'ostali', 'bez-pulta'),
+  F('sveucilisna-knjiznica', 'Sveučilišna knjižnica', 'ostali', 'jedna-ploca'),
+  F('sveuciliste', 'Sveučilište u Splitu', 'ostali', 'veliki-zid'),
 ];
 
 export function facultyById(id: string | null | undefined): Faculty | undefined {

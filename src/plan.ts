@@ -23,13 +23,15 @@ export class FloorPlan {
   }
 
   private svg(): string {
-    const back = wallSpec('back');
+    const back = wallSpec('back')!;
     const left = wallSpec('left');
     const right = wallSpec('right');
     const W = wallLength(back);
-    const D = Math.max(wallLength(left), wallLength(right));
+    // Stands without side walls still get a little floor in front of the wall.
+    const D = Math.max(left ? wallLength(left) : 0, right ? wallLength(right) : 0, 700);
     const T = 90;
     const c = BOOTH.organizer.counter;
+    const fascia = BOOTH.organizer.fascia;
     const parts: string[] = [];
 
     /** Offsets of each panel along a wall, from its unfolded left edge. */
@@ -56,21 +58,21 @@ export class FloorPlan {
     // Back wall runs left → right along the top.
     for (const { p, start } of offsets(back)) seg(back, p.id, start, 0, start + p.width, 0, start + p.width / 2, -170);
     // Left wall: its unfolded left edge is the front of the stand.
-    for (const { p, start } of offsets(left)) seg(left, p.id, 0, D - start, 0, D - start - p.width, -190, D - start - p.width / 2);
+    if (left) for (const { p, start } of offsets(left)) seg(left, p.id, 0, D - start, 0, D - start - p.width, -190, D - start - p.width / 2);
     // Right wall: its unfolded left edge is the back corner.
-    for (const { p, start } of offsets(right)) seg(right, p.id, W, start, W, start + p.width, W + 190, start + p.width / 2);
+    if (right) for (const { p, start } of offsets(right)) seg(right, p.id, W, start, W, start + p.width, W + 190, start + p.width / 2);
 
     const corner = (x: number, y: number) => `<rect class="corner" x="${x - T / 2}" y="${y - T / 2}" width="${T}" height="${T}" />`;
 
     return `
       <svg viewBox="-340 -330 ${W + 680} ${D + 820}" role="img" aria-label="Tlocrt štanda">
         <rect class="floor" x="0" y="0" width="${W}" height="${D}" />
-        <rect class="org" x="${T / 2}" y="${D - c.depth}" width="${c.width}" height="${c.depth}" rx="24" />
-        <text class="org-lbl" x="${T / 2 + c.width / 2}" y="${D - c.depth / 2}">pult 9 · 10</text>
-        <line class="fascia" x1="0" y1="${D + 70}" x2="${W}" y2="${D + 70}" />
-        <text class="org-lbl" x="${W - 520}" y="${D + 210}">natpis 11 · 12</text>
+        ${c ? `<rect class="org" x="${T / 2}" y="${D - c.depth}" width="${c.width}" height="${c.depth}" rx="24" />
+        <text class="org-lbl" x="${T / 2 + c.width / 2}" y="${D - c.depth / 2}">pult ${c.front} · ${c.side}</text>` : ''}
+        ${fascia.length ? `<line class="fascia" x1="0" y1="${D + 70}" x2="${W}" y2="${D + 70}" />
+        <text class="org-lbl" x="${W - 520}" y="${D + 210}">natpis ${fascia.map((f) => f.id).join(' · ')}</text>` : ''}
         ${parts.join('')}
-        ${corner(0, 0)}${corner(W, 0)}
+        ${left ? corner(0, 0) : ''}${right ? corner(W, 0) : ''}
         <g class="visitor">
           <path d="M ${W / 2} ${D + 420} v -150 m -70 70 l 70 -70 l 70 70" />
           <text x="${W / 2}" y="${D + 430}">posjetitelji</text>

@@ -1,6 +1,6 @@
 import JSZip from 'jszip';
 import type { App } from './app';
-import { BOOTH, panelsTouched, primaryPanel, printFill, wallName } from './booth';
+import { BOOTH, STAND_ID, panelsTouched, primaryPanel, printFill, standName, wallName } from './booth';
 import { EVENT, GROUPS } from './event';
 import { computeIssues, effectiveDpi } from './issues';
 import { type Doc, type Item, normalizeDoc } from './state';
@@ -67,8 +67,8 @@ function summary(app: App, report: ReturnType<typeof describe>[]): string {
   const lines: string[] = [];
   lines.push(`RASPORED ŠTANDA — ${EVENT.name.toUpperCase()} ${EVENT.year}`, '');
   lines.push(`Sastavnica: ${f?.name ?? '(nije odabrana)'}`);
-  lines.push(`Boja:       ${f ? `${GROUPS[f.group].name}, ${GROUPS[f.group].cmyk} (${color})` : color}  (svi paneli 1–8)`);
-  lines.push(`Natpis:     paneli 11 i 12 — „${f?.name.toUpperCase() ?? ''}”`);
+  lines.push(`Boja:       ${f ? `${GROUPS[f.group].name}, ${GROUPS[f.group].cmyk} (${color})` : color}  (svi paneli)`);
+  if (BOOTH.organizer.fascia.length) lines.push(`Natpis:     paneli ${BOOTH.organizer.fascia.map((x) => x.id).join(' i ')} — „${f?.name.toUpperCase() ?? ''}”`);
   if (ex.contact) lines.push(`Kontakt:  ${ex.contact}`);
   if (ex.email) lines.push(`E-mail:   ${ex.email}`);
   lines.push(`Izvezeno: ${new Date().toLocaleString('hr-HR')}`, '');
@@ -76,7 +76,10 @@ function summary(app: App, report: ReturnType<typeof describe>[]): string {
   lines.push('Položaji su u milimetrima, mjereni od gornjeg lijevog kuta panela.');
   lines.push('Rotacija je u smjeru kazaljke na satu, oko gornjeg lijevog kuta elementa.');
   lines.push('Ispuna za tisak je ~6 mm šira sa svake strane i 5 mm viša od vidljivog dijela (ulazi u profil).');
-  lines.push(`Pult zaklanja donjih ${BOOTH.organizer.counter.height} mm panela ${BOOTH.hiddenByCounter}.`, '');
+  lines.push(`Štand: ${standName(STAND_ID)}`);
+  const counter = BOOTH.organizer.counter;
+  if (counter) lines.push(`Pult zaklanja donjih ${counter.height} mm panela ${BOOTH.hiddenByCounter}.`);
+  lines.push('');
 
   for (const w of app.layout.walls) {
     lines.push('='.repeat(60), wallName(w.kind, w.id).toUpperCase(), '='.repeat(60));
@@ -154,6 +157,7 @@ export async function buildZip(app: App): Promise<{ blob: Blob; filename: string
         contact: { name: store.doc.exhibitor.contact, email: store.doc.exhibitor.email, note: store.doc.exhibitor.note },
         units: 'mm',
         booth: {
+          stand: STAND_ID,
           wall_height: BOOTH.wallHeight,
           panel_color: f?.color ?? '#ffffff',
           header_text: f?.name ?? '',

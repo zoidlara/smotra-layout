@@ -57,13 +57,14 @@ export function computeIssues({ store, canvas, layout }: Ctx): Issue[] {
               : `${label} prelazi preko spoja panela ${ids} — kroz njega prolazi aluminijski profil.`,
         });
       }
+      const counter = BOOTH.organizer.counter;
       const hidden = touched.find((t) => t.panel.id === BOOTH.hiddenByCounter);
       // Full-height backgrounds are fine; warn about content placed behind the counter.
-      if (hidden && box.h < BOOTH.wallHeight * 0.9 && box.y + box.h > BOOTH.wallHeight - BOOTH.organizer.counter.height) {
+      if (hidden && counter && box.h < BOOTH.wallHeight * 0.9 && box.y + box.h > BOOTH.wallHeight - counter.height) {
         out.push({
           level: 'warn',
           itemId: it.id,
-          text: `${label} je u donjih ${Math.round(BOOTH.organizer.counter.height / 10)} cm panela ${BOOTH.hiddenByCounter}, koje zaklanja pult. Pomaknite ga više.`,
+          text: `${label} je u donjih ${Math.round(counter.height / 10)} cm panela ${BOOTH.hiddenByCounter}, koje zaklanja pult. Pomaknite ga više.`,
         });
       }
       const inside = touched.reduce((s, t) => s + t.area, 0);

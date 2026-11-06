@@ -17,12 +17,25 @@ export interface WallSpec {
   panels: { id: string; width: number }[];
 }
 
+/** Kinds of stand. Most exhibitors get the standard 3 × 2 m stand. */
+export type StandId = 'standard' | 'bez-pulta' | 'jedna-ploca' | 'veliki-zid';
+
+interface StandSpec {
+  name: string;
+  walls: WallSpec[];
+  /** Header boards made by the organiser, left to right. Empty if the stand has none. */
+  fascia: { id: string; width: number; height: number }[];
+  counter: { front: string; side: string; width: number; height: number; depth: number } | null;
+  /** The counter stands in front of this panel and hides its lower part (counter height). */
+  hiddenByCounter: string | null;
+}
+
 /**
- * Stand 3 × 2 m, numbered as on the organiser's sketch (fills 1–6 are 950 mm, 7–8 are 455 mm):
+ * Standard stand 3 × 2 m, numbered as on the organiser's sketch (fills 1–6 are 950 mm, 7–8 are 455 mm):
  * left wall by the counter 7 + 8 + 1 (front → back), back wall 2 + 3 + 4, right wall 5 + 6
  * (back → front). All panels 2350 mm high.
  */
-const WALLS: WallSpec[] = [
+const STANDARD_WALLS: WallSpec[] = [
   {
     id: 'left',
     kind: 'side',
@@ -60,21 +73,98 @@ const WALLS: WallSpec[] = [
   },
 ];
 
+const STANDARD_FASCIA = [
+  { id: '11', width: 1940, height: 330 },
+  { id: '12', width: 950, height: 330 },
+];
+
+const STANDS: Record<StandId, StandSpec> = {
+  standard: {
+    name: 'Štand 3 × 2 m',
+    walls: STANDARD_WALLS,
+    fascia: STANDARD_FASCIA,
+    counter: { front: '9', side: '10', width: 950, height: 855, depth: 455 },
+    hiddenByCounter: '7',
+  },
+  // Same three walls and header, but no counter in front (Radio Kampus).
+  'bez-pulta': {
+    name: 'Štand 3 × 2 m bez pulta',
+    walls: STANDARD_WALLS.map((w) => (w.id === 'left' ? { ...w, subtitle: 'lijevo, uz ulaz' } : w)),
+    fascia: STANDARD_FASCIA,
+    counter: null,
+    hiddenByCounter: null,
+  },
+  // A single free-standing panel 950 mm wide (Sveučilišna knjižnica).
+  'jedna-ploca': {
+    name: 'Jedna ploča 950 mm',
+    walls: [{ id: 'back', kind: 'back', title: 'PLOČA', subtitle: 'samostojeća', editable: true, panels: [{ id: '1', width: 950 }] }],
+    fascia: [],
+    counter: null,
+    hiddenByCounter: null,
+  },
+  // One long wall of eight 950 mm panels.
+  'veliki-zid': {
+    name: 'Veliki zid, 8 ploča po 950 mm',
+    walls: [
+      {
+        id: 'back',
+        kind: 'back',
+        title: 'VELIKI ZID',
+        subtitle: '8 ploča po 950 mm',
+        editable: true,
+        panels: ['1', '2', '3', '4', '5', '6', '7', '8'].map((id) => ({ id, width: 950 })),
+      },
+    ],
+    fascia: [],
+    counter: null,
+    hiddenByCounter: null,
+  },
+};
+
+const STAND_KEY = 'smotra-stand';
+
+function isStandId(v: unknown): v is StandId {
+  return typeof v === 'string' && v in STANDS;
+}
+
+function readStoredStand(): StandId {
+  try {
+    const v = localStorage.getItem(STAND_KEY);
+    return isStandId(v) ? v : 'standard';
+  } catch {
+    return 'standard';
+  }
+}
+
+/** Remembers which stand to lay out on the next page load. Returns false if storage is blocked. */
+export function storeStand(id: StandId): boolean {
+  try {
+    localStorage.setItem(STAND_KEY, id);
+    return localStorage.getItem(STAND_KEY) === id;
+  } catch {
+    return false;
+  }
+}
+
+/** The stand this page is laid out for (chosen from the exhibitor on load). */
+export const STAND_ID: StandId = readStoredStand();
+const STAND = STANDS[STAND_ID];
+
+export function standName(id: StandId): string {
+  return STANDS[id].name;
+}
+
 export const BOOTH = {
   wallHeight: 2350,
   /** Aluminium profile between neighbouring panels. Drawn only, never printed. */
   postWidth: 20,
-  walls: WALLS,
+  walls: STAND.walls,
   /** Parts made by the organiser. Shown greyed out for context only. */
   organizer: {
-    fascia: [
-      { id: '11', width: 1940, height: 330 },
-      { id: '12', width: 950, height: 330 },
-    ],
-    counter: { front: '9', side: '10', width: 950, height: 855, depth: 455 },
+    fascia: STAND.fascia,
+    counter: STAND.counter,
   },
-  /** The counter stands in front of this panel and hides its lower part (counter height). */
-  hiddenByCounter: '7',
+  hiddenByCounter: STAND.hiddenByCounter,
   /**
    * Print sizes of the forex fills from the organiser (vice-rector's email, 3 Nov 2026).
    * Slightly larger than the visible panel: the extra edge goes into the aluminium profile.
@@ -139,8 +229,8 @@ export interface Layout {
   panel(id: string): PanelLayout | undefined;
 }
 
-export function wallSpec(id: WallId): WallSpec {
-  return BOOTH.walls.find((w) => w.id === id)!;
+export function wallSpec(id: WallId): WallSpec | undefined {
+  return BOOTH.walls.find((w) => w.id === id);
 }
 
 /** Total length of a wall including the profiles between its panels. */

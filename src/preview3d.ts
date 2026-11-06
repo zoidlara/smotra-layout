@@ -73,12 +73,13 @@ export class Preview3D {
     const left = wallSpec('left');
     const right = wallSpec('right');
     const W = back.w;
-    const leftLen = wallLength(left);
-    const rightLen = wallLength(right);
-    const D = Math.max(leftLen, rightLen);
+    const leftLen = left ? wallLength(left) : 0;
+    const rightLen = right ? wallLength(right) : 0;
+    // Stands without side walls still get a little floor in front of the wall.
+    const D = Math.max(leftLen, rightLen, 700);
     const H = BOOTH.wallHeight;
     const { fascia, counter } = BOOTH.organizer;
-    const fh = fascia[0].height;
+    const fh = fascia[0]?.height ?? 0;
     const faculty = this.app.faculty;
     const color = faculty?.color ?? '#ffffff';
 
@@ -102,33 +103,37 @@ export class Preview3D {
     // Artwork only faces into the stand; the outside of each wall is plain.
     const walls: [number, string, string, string][] = [
       [sW, `translateZ(${-sD / 2}px)`, 'back', this.app.canvas.renderRegion(back, texPx).toDataURL('image/png')],
-      [leftLen * s, `translateX(${-sW / 2}px) rotateY(90deg)`, 'side', this.wallTexture(left, color, texPx)],
-      [rightLen * s, `translateX(${sW / 2}px) rotateY(-90deg)`, 'side', this.wallTexture(right, color, texPx)],
     ];
+    if (left) walls.push([leftLen * s, `translateX(${-sW / 2}px) rotateY(90deg)`, 'side', this.wallTexture(left, color, texPx)]);
+    if (right) walls.push([rightLen * s, `translateX(${sW / 2}px) rotateY(-90deg)`, 'side', this.wallTexture(right, color, texPx)]);
     for (const [w, transform, cls, img] of walls) {
       face(w, sH, transform, `wall ${cls}`, { img });
       face(w, sH, `${transform} rotateY(180deg)`, `wall outer ${cls}`);
     }
 
-    // Front posts and the header boards 11 + 12 with the faculty name.
-    const postH = (H + fh) * s;
-    for (const x of [-sW / 2, sW / 2]) face(4, postH, `translate3d(${x}px, ${-(fh * s) / 2}px, ${sD / 2}px)`, 'post');
-    const total = fascia.reduce((n, f) => n + f.width, 0);
-    const header = document.createElement('canvas');
-    header.width = Math.round(total * texPx);
-    header.height = Math.round(fh * texPx);
-    drawFascia(header, faculty, fascia[0].width / total);
-    face(total * s, fh * s, `translate3d(0px, ${-sH / 2 - (fh * s) / 2}px, ${sD / 2}px)`, 'fascia', { img: header.toDataURL('image/png') });
+    // Front posts and the header boards with the faculty name (standard stands only).
+    if (fascia.length && left && right) {
+      const postH = (H + fh) * s;
+      for (const x of [-sW / 2, sW / 2]) face(4, postH, `translate3d(${x}px, ${-(fh * s) / 2}px, ${sD / 2}px)`, 'post');
+      const total = fascia.reduce((n, f) => n + f.width, 0);
+      const header = document.createElement('canvas');
+      header.width = Math.round(total * texPx);
+      header.height = Math.round(fh * texPx);
+      drawFascia(header, faculty, fascia[0].width / total);
+      face(total * s, fh * s, `translate3d(0px, ${-sH / 2 - (fh * s) / 2}px, ${sD / 2}px)`, 'fascia', { img: header.toDataURL('image/png') });
+    }
 
     // Counter at the front-left corner.
-    const cw = counter.width * s;
-    const ch = counter.height * s;
-    const cd = counter.depth * s;
-    const ccx = -sW / 2 + cw / 2;
-    const ccy = sH / 2 - ch / 2;
-    face(cw, ch, `translate3d(${ccx}px, ${ccy}px, ${sD / 2}px)`, 'org counter', { html: `<span>LOGO SMOTRE<br><small>${counter.front}</small></span>` });
-    face(cd, ch, `translate3d(${ccx + cw / 2}px, ${ccy}px, ${sD / 2 - cd / 2}px) rotateY(90deg)`, 'org counter side', { html: `<small>${counter.side}</small>` });
-    face(cw, cd, `translate3d(${ccx}px, ${sH / 2 - ch}px, ${sD / 2 - cd / 2}px) rotateX(90deg)`, 'org counter top');
+    if (counter) {
+      const cw = counter.width * s;
+      const ch = counter.height * s;
+      const cd = counter.depth * s;
+      const ccx = -sW / 2 + cw / 2;
+      const ccy = sH / 2 - ch / 2;
+      face(cw, ch, `translate3d(${ccx}px, ${ccy}px, ${sD / 2}px)`, 'org counter', { html: `<span>LOGO SMOTRE<br><small>${counter.front}</small></span>` });
+      face(cd, ch, `translate3d(${ccx + cw / 2}px, ${ccy}px, ${sD / 2 - cd / 2}px) rotateY(90deg)`, 'org counter side', { html: `<small>${counter.side}</small>` });
+      face(cw, cd, `translate3d(${ccx}px, ${sH / 2 - ch}px, ${sD / 2 - cd / 2}px) rotateX(90deg)`, 'org counter top');
+    }
   }
 
   /** The wall's artwork from the editor, or a plain faculty-coloured wall if it isn't editable. */
