@@ -102,7 +102,7 @@ const STANDS: Record<StandId, StandSpec> = {
     counter: null,
     hiddenByCounter: null,
   },
-  // One long wall of eight 950 mm panels.
+  // One long wall of eight 950 mm panels (Rectorate services).
   'veliki-zid': {
     name: 'Veliki zid, 8 ploča po 950 mm',
     walls: [

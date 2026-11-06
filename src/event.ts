@@ -25,7 +25,7 @@ export const GROUPS = {
   interdisciplinarne: { name: 'Interdisciplinarne znanosti', cmyk: 'C25 M25 Y40 K0', color: '#c4b79a' },
   // The organiser writes "C0 M0 Y77 K0", but their swatch is the brand pink (R255 G105 B172).
   umjetnost: { name: 'Umjetničko područje', cmyk: 'C0 M77 Y0 K0', color: '#ff69ac' },
-  // Not a science field: student bodies, the library, the radio and the university itself.
+  // Not a science field: student bodies, the library, the radio and the Rectorate services.
   // Placeholder colour (light blue from the Smotra palette) until the organiser gives one.
   ostali: { name: 'Ostali izlagači', cmyk: 'C15 M3 Y3 K0', color: '#d5e6ee' },
 } as const;
@@ -69,7 +69,7 @@ export const FACULTIES: Faculty[] = [
   F('studentski-zbor', 'Studentski zbor', 'ostali'),
   F('radio-kampus', 'Radio Kampus', 'ostali', 'bez-pulta'),
   F('sveucilisna-knjiznica', 'Sveučilišna knjižnica', 'ostali', 'jedna-ploca'),
-  F('sveuciliste', 'Sveučilište u Splitu', 'ostali', 'veliki-zid'),
+  F('sluzbe-rektorata', 'Službe Rektorata Sveučilišta u Splitu', 'ostali', 'veliki-zid'),
 ];
 
 export function facultyById(id: string | null | undefined): Faculty | undefined {
