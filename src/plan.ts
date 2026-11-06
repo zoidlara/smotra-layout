@@ -1,5 +1,5 @@
 import type { App } from './app';
-import { BOOTH, type WallSpec, primaryPanel, wallLength, wallSpec } from './booth';
+import { BOOTH, IS_COUNTER, type WallSpec, primaryPanel, wallLength, wallSpec } from './booth';
 
 /** Top-down sketch of the stand. Clicking a panel of an editable wall selects it. */
 export class FloorPlan {
@@ -28,7 +28,9 @@ export class FloorPlan {
     const right = wallSpec('right');
     const W = wallLength(back);
     // Stands without side walls still get a little floor in front of the wall.
-    const D = Math.max(left ? wallLength(left) : 0, right ? wallLength(right) : 0, 700);
+    const D = IS_COUNTER ? wallLength(left!) : Math.max(left ? wallLength(left) : 0, right ? wallLength(right) : 0, 700);
+    // The counter faces the visitors, so its front runs along the bottom.
+    const by = IS_COUNTER ? D : 0;
     const T = 90;
     const c = BOOTH.organizer.counter;
     const fascia = BOOTH.organizer.fascia;
@@ -56,11 +58,12 @@ export class FloorPlan {
     };
 
     // Back wall runs left → right along the top.
-    for (const { p, start } of offsets(back)) seg(back, p.id, start, 0, start + p.width, 0, start + p.width / 2, -170);
+    for (const { p, start } of offsets(back)) seg(back, p.id, start, by, start + p.width, by, start + p.width / 2, IS_COUNTER ? D + 230 : -170);
     // Left wall: its unfolded left edge is the front of the stand.
     if (left) for (const { p, start } of offsets(left)) seg(left, p.id, 0, D - start, 0, D - start - p.width, -190, D - start - p.width / 2);
     // Right wall: its unfolded left edge is the back corner.
-    if (right) for (const { p, start } of offsets(right)) seg(right, p.id, W, start, W, start + p.width, W + 190, start + p.width / 2);
+    if (right && IS_COUNTER) for (const { p, start } of offsets(right)) seg(right, p.id, W, D - start, W, D - start - p.width, W + 190, D - start - p.width / 2);
+    else if (right) for (const { p, start } of offsets(right)) seg(right, p.id, W, start, W, start + p.width, W + 190, start + p.width / 2);
 
     const corner = (x: number, y: number) => `<rect class="corner" x="${x - T / 2}" y="${y - T / 2}" width="${T}" height="${T}" />`;
 
@@ -72,7 +75,7 @@ export class FloorPlan {
         ${fascia.length ? `<line class="fascia" x1="0" y1="${D + 70}" x2="${W}" y2="${D + 70}" />
         <text class="org-lbl" x="${W - 520}" y="${D + 210}">natpis ${fascia.map((f) => f.id).join(' · ')}</text>` : ''}
         ${parts.join('')}
-        ${left ? corner(0, 0) : ''}${right ? corner(W, 0) : ''}
+        ${IS_COUNTER ? '' : `${left ? corner(0, 0) : ''}${right ? corner(W, 0) : ''}`}
         <g class="visitor">
           <path d="M ${W / 2} ${D + 420} v -150 m -70 70 l 70 -70 l 70 70" />
           <text x="${W / 2}" y="${D + 430}">posjetitelji</text>

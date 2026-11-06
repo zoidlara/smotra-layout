@@ -1,5 +1,5 @@
 import type { App } from './app';
-import { BOOTH, type WallSpec, wallLength, wallSpec } from './booth';
+import { BOOTH, IS_COUNTER, type WallSpec, wallLength, wallSpec } from './booth';
 import { drawFascia } from './event';
 import { clamp } from './util';
 
@@ -69,6 +69,7 @@ export class Preview3D {
 
   private build() {
     this.booth.replaceChildren();
+    if (IS_COUNTER) return this.buildCounter();
     const back = this.app.layout.walls.find((w) => w.id === 'back')!;
     const left = wallSpec('left');
     const right = wallSpec('right');
@@ -133,6 +134,48 @@ export class Preview3D {
       face(cw, ch, `translate3d(${ccx}px, ${ccy}px, ${sD / 2}px)`, 'org counter', { html: `<span>LOGO SMOTRE<br><small>${counter.front}</small></span>` });
       face(cd, ch, `translate3d(${ccx + cw / 2}px, ${ccy}px, ${sD / 2 - cd / 2}px) rotateY(90deg)`, 'org counter side', { html: `<small>${counter.side}</small>` });
       face(cw, cd, `translate3d(${ccx}px, ${sH / 2 - ch}px, ${sD / 2 - cd / 2}px) rotateX(90deg)`, 'org counter top');
+    }
+  }
+
+  /** Counter-only stand: front 9 and sides 10 face outwards, with the header board on two posts above. */
+  private buildCounter() {
+    const region = (id: string) => this.app.layout.walls.find((w) => w.id === id)!;
+    const front = region('back');
+    const side = region('left');
+    const W = front.w;
+    const Dp = side.w;
+    const H = BOOTH.wallHeight;
+    const fascia = BOOTH.organizer.fascia[0];
+    const top = 2350; // header board top, as on the standard stand
+    const s = Math.min(0.3, (this.scene.clientWidth * 0.5) / W, (this.scene.clientHeight * 0.7) / top);
+    const texPx = Math.min(1, s * 2.5);
+    const face = (w: number, h: number, transform: string, cls: string, img?: string) => {
+      const el = document.createElement('div');
+      el.className = `p3d-face ${cls}`;
+      Object.assign(el.style, { width: `${w}px`, height: `${h}px`, left: `${-w / 2}px`, top: `${-h / 2}px`, transform });
+      if (img) el.style.backgroundImage = `url(${img})`;
+      this.booth.append(el);
+    };
+    const tex = (id: string) => this.app.canvas.renderRegion(region(id), texPx).toDataURL('image/png');
+    const sW = W * s;
+    const sD = Dp * s;
+    const sH = H * s;
+    const floorY = (top * s) / 2;
+    const cy = floorY - sH / 2;
+    face(sW * 2.2, sD * 3, `translateY(${floorY}px) rotateX(90deg)`, 'floor');
+    face(sW, sH, `translate3d(0px, ${cy}px, ${sD / 2}px)`, 'wall back', tex('back'));
+    face(sD, sH, `translate3d(${-sW / 2}px, ${cy}px, 0px) rotateY(-90deg)`, 'wall side', tex('left'));
+    face(sD, sH, `translate3d(${sW / 2}px, ${cy}px, 0px) rotateY(90deg)`, 'wall side', tex('right'));
+    face(sW, sD, `translate3d(0px, ${floorY - sH}px, 0px) rotateX(90deg)`, 'org counter top');
+    if (fascia) {
+      const fh = fascia.height * s;
+      const postH = (top - H) * s;
+      for (const x of [-sW / 2, sW / 2]) face(4, postH, `translate3d(${x}px, ${floorY - sH - postH / 2}px, ${-sD / 2}px)`, 'post');
+      const header = document.createElement('canvas');
+      header.width = Math.round(fascia.width * texPx);
+      header.height = Math.round(fascia.height * texPx);
+      drawFascia(header, this.app.faculty, 1);
+      face(sW, fh, `translate3d(0px, ${-floorY + fh / 2}px, ${-sD / 2}px)`, 'fascia', header.toDataURL('image/png'));
     }
   }
 

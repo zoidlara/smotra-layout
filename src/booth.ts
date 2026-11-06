@@ -18,10 +18,13 @@ export interface WallSpec {
 }
 
 /** Kinds of stand. Most exhibitors get the standard 3 × 2 m stand. */
-export type StandId = 'standard' | 'bez-pulta' | 'jedna-ploca' | 'veliki-zid';
+export type StandId = 'standard' | 'bez-pulta' | 'pult' | 'veliki-zid';
 
 interface StandSpec {
   name: string;
+  /** Visible height of every panel, and the height of its print fill. */
+  height: number;
+  printHeight: number;
   walls: WallSpec[];
   /** Header boards made by the organiser, left to right. Empty if the stand has none. */
   fascia: { id: string; width: number; height: number }[];
@@ -81,6 +84,8 @@ const STANDARD_FASCIA = [
 const STANDS: Record<StandId, StandSpec> = {
   standard: {
     name: 'Štand 3 × 2 m',
+    height: 2350,
+    printHeight: 2355,
     walls: STANDARD_WALLS,
     fascia: STANDARD_FASCIA,
     counter: { front: '9', side: '10', width: 950, height: 855, depth: 455 },
@@ -89,22 +94,32 @@ const STANDS: Record<StandId, StandSpec> = {
   // Same three walls and header, but no counter in front (Radio Kampus).
   'bez-pulta': {
     name: 'Štand 3 × 2 m bez pulta',
+    height: 2350,
+    printHeight: 2355,
     walls: STANDARD_WALLS.map((w) => (w.id === 'left' ? { ...w, subtitle: 'lijevo, uz ulaz' } : w)),
     fascia: STANDARD_FASCIA,
     counter: null,
     hiddenByCounter: null,
   },
-  // A single free-standing panel 950 mm wide (Sveučilišna knjižnica).
-  'jedna-ploca': {
-    name: 'Jedna ploča 950 mm',
-    walls: [{ id: 'back', kind: 'back', title: 'PLOČA', subtitle: 'samostojeća', editable: true, panels: [{ id: '1', width: 950 }] }],
-    fascia: [],
+  // Just a counter with a header board above it (Sveučilišna knjižnica): front 9 and both sides 10.
+  pult: {
+    name: 'Pult 950 mm s natpisom',
+    height: 855,
+    printHeight: 855,
+    walls: [
+      { id: 'left', kind: 'side', title: 'BOK', subtitle: 'lijevo', editable: true, panels: [{ id: '10L', width: 455 }] },
+      { id: 'back', kind: 'back', title: 'PREDNJA STRANA', subtitle: 'prema posjetiteljima', editable: true, panels: [{ id: '9', width: 950 }] },
+      { id: 'right', kind: 'side', title: 'BOK', subtitle: 'desno', editable: true, panels: [{ id: '10D', width: 455 }] },
+    ],
+    fascia: [{ id: '12', width: 950, height: 330 }],
     counter: null,
     hiddenByCounter: null,
   },
   // One long wall of eight 950 mm panels (Rectorate services).
   'veliki-zid': {
     name: 'Veliki zid, 8 ploča po 950 mm',
+    height: 2350,
+    printHeight: 2355,
     walls: [
       {
         id: 'back',
@@ -155,7 +170,7 @@ export function standName(id: StandId): string {
 }
 
 export const BOOTH = {
-  wallHeight: 2350,
+  wallHeight: STAND.height,
   /** Aluminium profile between neighbouring panels. Drawn only, never printed. */
   postWidth: 20,
   walls: STAND.walls,
@@ -177,8 +192,12 @@ export const BOOTH = {
 
 /** Print size (forex fill) for a wall panel of the given visible width. */
 export function printFill(visibleWidth: number) {
-  return visibleWidth > 600 ? BOOTH.printFill.wide : BOOTH.printFill.narrow;
+  const f = visibleWidth > 600 ? BOOTH.printFill.wide : BOOTH.printFill.narrow;
+  return { width: f.width, height: STAND.printHeight };
 }
+
+/** True for the counter-only stand: its three faces point outwards, not into a booth. */
+export const IS_COUNTER = STAND_ID === 'pult';
 
 export const PRINT = {
   /** Effective resolution at final print size. */

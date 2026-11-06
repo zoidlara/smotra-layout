@@ -69,6 +69,13 @@ export class App {
       if (legend) legend.lastElementChild!.innerHTML = '<i class="sw org"></i><span><b>Organizator</b> — natpis (11–12)</span>';
       return;
     }
+    if (STAND_ID === 'pult') {
+      set('.stage-caption', 'Pult: lijevi bok (10L), prednja strana (9) i desni bok (10D). Natpis 12 iznad pulta postavlja organizator.');
+      if (legend) legend.innerHTML = '<li><i class="sw back"></i><span><b>Prednja strana pulta</b> — 9, uređujete vi</span></li><li><i class="sw side"></i><span><b>Bokovi pulta</b> — 10L i 10D, po želji</span></li><li><i class="sw org"></i><span><b>Organizator</b> — natpis (12)</span></li>';
+      set('.fascia-label', 'Natpis iznad pulta (12) i boja panela');
+      document.querySelectorAll<HTMLElement>('[data-view="left"], [data-view="right"]').forEach((b) => (b.style.display = 'none'));
+      return;
+    }
     const n = BOOTH.walls[0].panels.length;
     const ids = n === 1 ? 'panel 1' : `paneli 1–${n}`;
     set('.stage-caption', n === 1 ? `${standName(STAND_ID)}. Prazan dio ostaje u boji izlagača.` : `${standName(STAND_ID)}: ${ids}, jedan do drugog. Prazni paneli ostaju u boji izlagača.`);

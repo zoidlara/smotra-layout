@@ -68,7 +68,7 @@ export const FACULTIES: Faculty[] = [
   F('studentski-centar', 'Studentski centar', 'ostali'),
   F('studentski-zbor', 'Studentski zbor', 'ostali'),
   F('radio-kampus', 'Radio Kampus', 'ostali', 'bez-pulta'),
-  F('sveucilisna-knjiznica', 'Sveučilišna knjižnica', 'ostali', 'jedna-ploca'),
+  F('sveucilisna-knjiznica', 'Sveučilišna knjižnica', 'ostali', 'pult'),
   F('sluzbe-rektorata', 'Službe Rektorata Sveučilišta u Splitu', 'ostali', 'veliki-zid'),
 ];
 

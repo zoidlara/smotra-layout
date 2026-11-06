@@ -156,14 +156,19 @@ export class BoothCanvas {
     for (const w of this.layout.walls) {
       const color = COLORS[w.kind];
       g.add(new Konva.Rect({ x: w.x, y: bandY, width: w.w, height: bandH, fill: color, cornerRadius: 28 }));
-      const iw = 180;
-      const ih = 124;
-      const ix = w.x + 44;
-      const iy = bandY + (bandH - ih) / 2;
-      this.addWallIcon(ix, iy, iw, ih, w.id);
-      const tx = ix + iw + 44;
-      g.add(new Konva.Text({ x: tx, y: bandY + 36, text: w.title, fontSize: 88, fontStyle: 'bold', fontFamily: UI_FONT, fill: '#ffffff' }));
-      g.add(new Konva.Text({ x: tx, y: bandY + 140, text: w.subtitle, fontSize: 56, fontFamily: UI_FONT, fill: 'rgba(255,255,255,0.88)' }));
+      // Narrow walls (the counter's faces) get smaller text and no icon so the label fits.
+      const compact = w.w < 1200;
+      let tx = w.x + 36;
+      if (!compact) {
+        const iw = 180;
+        const ih = 124;
+        const ix = w.x + 44;
+        this.addWallIcon(ix, bandY + (bandH - ih) / 2, iw, ih, w.id);
+        tx = ix + iw + 44;
+      }
+      const tw = w.x + w.w - tx - 24;
+      g.add(new Konva.Text({ x: tx, y: bandY + (compact ? 40 : 36), width: tw, wrap: 'none', ellipsis: true, text: w.title, fontSize: compact ? 60 : 88, fontStyle: 'bold', fontFamily: UI_FONT, fill: '#ffffff' }));
+      g.add(new Konva.Text({ x: tx, y: bandY + (compact ? 125 : 140), width: tw, wrap: 'none', ellipsis: true, text: w.subtitle, fontSize: compact ? 44 : 56, fontFamily: UI_FONT, fill: 'rgba(255,255,255,0.88)' }));
 
       for (const p of w.panels) {
         const cx = p.x + p.w / 2;
